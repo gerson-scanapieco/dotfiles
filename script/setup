@@ -1,29 +1,88 @@
 #!/bin/bash
 
+# Dotfiles vars
+export DOTFILES="${HOME}/.dotfiles"
+export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
+
+
+####################################################################
+# Configuring the shell
+####################################################################
+
 echo "Installing Oh my ZSH..."
-git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+
+if ![ -d "$HOME"/.oh-my-zsh ]; then
+  git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+  
+  echo "Done!"
+else
+  echo "ZSH is already installed!"
+fi
+
+# Use ZSH as shell
 chsh -s /bin/zsh
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/plugins/zsh-autosuggestions
 
-echo "Setup configuration files..."
+# Iterm2 integration
+curl -Ls https://iterm2.com/misc/zsh_startup.in -o ${HOME}/.iterm2_shell_integration.zsh
 
-config_files=~/dotfiles/config/*
+echo "Installing ZSH pure prompt..."
+npm install --global pure-prompt
 
-for file in $config_files; do
-  config=$(basename $file)
-  echo "Creating symlink for .$config"
-  ln -s $file ~/.$config
-done
+# Create symbolic links
+ln -sf ${DOTFILES_CONFIGS_DIR}/zshrc ~/.zshrc
+
+echo "Shell configured!"
+
+####################################################################
+# Configuring iTerm2
+####################################################################
+
+echo "Setting iterm2 preferences folder..."
+# defaults write com.googlecode.iterm2 "PrefsCustomFolder" -string "~/dotfiles/iterm"
+# defaults write com.googlecode.iterm2 "LoadPrefsFromCustomFolder" -bool true
+echo "iTerm2 configured!"
+
+####################################################################
+# Configuring Git
+####################################################################
+
+echo "Configuring Git..."
+echo "Moving configuration files..."
+
+ln -sf ${DOTFILES_CONFIGS_DIR}/gitconfig ~/.gitconfig
+ln -sf ${DOTFILES_CONFIGS_DIR}/gitignore ~/.gitignore
+ln -sf ${DOTFILES_CONFIGS_DIR}/gitmessage ~/.gitmessage
+
+echo "Done!"
+
+####################################################################
+# Configuring Ruby
+####################################################################
+
+echo "Configuring Ruby..."
+
+ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
+ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
+
+# Create default file to irb history
+touch ~/.irb-history
+
+echo "Installing ruby versions..."
+rbenv install 2.5.1
+rbenv global 2.5.1
+echo "Ruby 2.5.1 installed correctly!"
+
+
+####################################################################
+# Setup src/ directory
+####################################################################
 
 echo "Creating src directory..."
 mkdir -p ~/src/private
 
-echo "Setting iterm2 preferences folder..."
-defaults write com.googlecode.iterm2 "PrefsCustomFolder" -string "~/dotfiles/iterm"
-defaults write com.googlecode.iterm2 "LoadPrefsFromCustomFolder" -bool true
 
-echo "Installing ZSH pure prompt..."
-npm install --global pure-prompt
+####################################################################
+# Last steps
+####################################################################
 
 echo "Done :)"

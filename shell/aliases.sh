@@ -10,7 +10,10 @@ alias dockerclean='dockercleanc || true && dockercleani'
 
 # Bundler
 alias b="bundle"
-alias be="bundle exec"
+alias bi="b install --jobs=2"
+alias be="b exec"
+alias bo="b open"
+alias bu="b update"
 
 # Unix
 alias ll="ls -al"
@@ -18,6 +21,9 @@ alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias e="$EDITOR"
 alias v="$VISUAL"
+alias ..="cd .."
+alias ...="cd ../.."
+alias grep="grep --color=auto"
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
 

@@ -9,23 +9,39 @@
   l = log --pretty='format:%C(yellow)%h %C(blue)%ad %C(reset)%s%C(red)%d %C(green)%an%C(reset), %C(cyan)%ar' --date=short
   branches = for-each-ref --sort=-committerdate --format=\"%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
   pf = push --force-with-lease
+
 [color]
-  ui = true
+  diff = auto
+  grep = auto
+  interactive = auto
+  status = auto
+  branch = auto
+  status = auto
+  ui = auto
+
 [user]
   name = Gerson Scanapieco
   email = gerson.scanapieco@gmail.com
+
 [includeIf "gitdir:~/src/private/"]
   path = ~/.gitconfig-work
+
 [pull]
   rebase = true
+
 [core]
-  editor = /usr/bin/vim
+  editor = subl -w -n
   excludesfile = ~/.gitignore
+  pager = diff-so-fancy | less --tabs=1,5 -R
+  
 [merge]
   ff = false
+
 [commit]
   template = ~/.gitmessage
+
 [rerere]
   enabled = true
+
 [rebase]
   autosquash = true
