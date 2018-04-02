@@ -1,6 +1,7 @@
 *.orig
 *.swo
 *.swp
+*.tags
 *~
 .DS_Store
 .DS_Store?
