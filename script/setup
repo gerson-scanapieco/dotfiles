@@ -7,6 +7,10 @@ export RUBY_VERSION="2.6.0"
 export ERLANG_VERSION="21.0.5"
 export ELIXIR_VERSION="1.7.4"
 
+command_exists () {
+  command "$1" &> /dev/null ;
+}
+
 
 ####################################################################
 # Configuring the shell
@@ -64,7 +68,10 @@ echo "Done!"
 
 echo "Configuring Ruby..."
 
-if rbenv version 2>/dev/null; then  
+if command_exists rbenv
+then
+  echo "Ruby is already configured!"
+else
   ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
   ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
 
@@ -75,9 +82,6 @@ if rbenv version 2>/dev/null; then
   rbenv install ${RUBY_VERSION}
   rbenv global ${RUBY_VERSION}
   echo "Ruby ${RUBY_VERSION} installed correctly!"
-
-else
-  echo "Ruby is already configured!"
 fi
 
 ####################################################################
@@ -87,7 +91,10 @@ fi
 echo "Configuring Elixir..."
 echo "Installing asdf..."
 
-if asdf version 2>/dev/null; then  
+if command_exists asdf
+then
+  echo "Skipping installation, Elixir is already installed"
+else
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.6.3
 
   echo "Configuring asdf..."
@@ -106,9 +113,6 @@ if asdf version 2>/dev/null; then
   asdf install elixir ${ELIXIR_VERSION}
 
   echo "Erlang ${ERLANG_VERSION} and Elixir ${ELIXIR_VERSION} installed correctly!"
-
-else
-  echo "Skipping installation, Elixir is already installed"
 fi
 
 ####################################################################
