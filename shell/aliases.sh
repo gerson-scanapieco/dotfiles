@@ -30,3 +30,6 @@ alias path='echo $PATH | tr -s ":" "\n"'
 # PostgreSQL
 alias start_pg='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
 alias stop_pg='pg_ctl -D /usr/local/var/postgres stop -s -m fast'
+
+# Git
+alias git="g"
