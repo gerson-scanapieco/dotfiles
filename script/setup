@@ -4,6 +4,8 @@
 export DOTFILES="${HOME}/.dotfiles"
 export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
 export RUBY_VERSION="2.6.0"
+export ERLANG_VERSION="21.0.5"
+export ELIXIR_VERSION="1.7.4"
 
 
 ####################################################################
@@ -62,17 +64,52 @@ echo "Done!"
 
 echo "Configuring Ruby..."
 
-ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
-ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
+if rbenv version 2>/dev/null; then  
+  ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
+  ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
 
-# Create default file to irb history
-touch ~/.irb-history
+  # Create default file to irb history
+  touch ~/.irb-history
 
-echo "Installing ruby versions..."
-rbenv install ${RUBY_VERSION}
-rbenv global ${RUBY_VERSION}
-echo "Ruby ${RUBY_VERSION} installed correctly!"
+  echo "Installing ruby versions..."
+  rbenv install ${RUBY_VERSION}
+  rbenv global ${RUBY_VERSION}
+  echo "Ruby ${RUBY_VERSION} installed correctly!"
 
+else
+  echo "Ruby is already configured!"
+fi
+
+####################################################################
+# Configuring Erlang/Elixir
+####################################################################
+
+echo "Configuring Elixir..."
+echo "Installing asdf..."
+
+if asdf version 2>/dev/null; then  
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.6.3
+
+  echo "Configuring asdf..."
+
+  echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
+  echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
+
+  echo "Adding asdf plugins..."
+  asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
+  asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
+
+  echo "Installing Erlang versions..."
+  asdf install erlang ${ERLANG_VERSION}
+
+  echo "Installing Elixir versions..."
+  asdf install elixir ${ELIXIR_VERSION}
+
+  echo "Erlang ${ERLANG_VERSION} and Elixir ${ELIXIR_VERSION} installed correctly!"
+
+else
+  echo "Skipping installation, Elixir is already installed"
+fi
 
 ####################################################################
 # Setup src/ directory
