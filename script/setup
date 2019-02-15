@@ -108,9 +108,11 @@ else
 
   echo "Installing Erlang versions..."
   asdf install erlang ${ERLANG_VERSION}
+  asdf global erlang ${ERLANG_VERSION}
 
   echo "Installing Elixir versions..."
   asdf install elixir ${ELIXIR_VERSION}
+  asdf global elixir ${ELIXIR_VERSION}
 
   echo "Erlang ${ERLANG_VERSION} and Elixir ${ELIXIR_VERSION} installed correctly!"
 fi
