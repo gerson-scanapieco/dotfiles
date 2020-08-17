@@ -3,9 +3,9 @@
 # Dotfiles vars
 export DOTFILES="${HOME}/.dotfiles"
 export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
-export RUBY_VERSION="2.6.0"
-export ERLANG_VERSION="21.0.5"
-export ELIXIR_VERSION="1.7.4"
+export RUBY_VERSION="2.7.1"
+export ERLANG_VERSION="22.0.7"
+export ELIXIR_VERSION="1.10.0"
 
 command_exists () {
   command "$1" &> /dev/null ;
