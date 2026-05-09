@@ -6,9 +6,12 @@ if test -d $HOME/.asdf/shims
     fish_add_path -p $HOME/.asdf/shims
 end
 
-# Autojump
-if test -f /opt/homebrew/share/autojump/autojump.fish
-    source /opt/homebrew/share/autojump/autojump.fish
-else if test -f /usr/local/share/autojump/autojump.fish
-    source /usr/local/share/autojump/autojump.fish
+# Zoxide
+if command -q zoxide
+    zoxide init fish | source
+end
+
+# Fzf keybindings and fuzzy completion
+if command -q fzf
+    fzf --fish | source
 end
