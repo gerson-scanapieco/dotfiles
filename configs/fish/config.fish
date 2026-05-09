@@ -20,6 +20,11 @@ if status is-interactive
         fzf --fish | source
     end
 
+    # Direnv
+    if command -q direnv
+        direnv hook fish | source
+    end
+
     # Starship prompt
     if command -q starship
         starship init fish | source

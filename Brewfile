@@ -5,6 +5,7 @@ brew 'cmake'
 brew 'coreutils'
 
 brew 'bat'
+brew 'direnv'
 brew 'fzf'
 brew 'gh'
 brew 'jq'
