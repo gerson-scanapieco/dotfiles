@@ -7,8 +7,5 @@ set -gx VISUAL "code -w"
 # Erlang/Elixir shell history
 set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
-# NVM directory
-set -gx NVM_DIR $HOME/.nvm
-
 # Path additions
 fish_add_path /usr/local/sbin
