@@ -6,6 +6,7 @@ brew 'coreutils'
 
 brew 'bat'
 brew 'fzf'
+brew 'gh'
 brew 'jq'
 brew 'ripgrep'
 brew 'zoxide'

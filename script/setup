@@ -14,6 +14,17 @@ command_exists () {
 
 
 ####################################################################
+# Installing Xcode Command Line Tools
+####################################################################
+
+if ! xcode-select -p &> /dev/null; then
+  echo "Installing Xcode Command Line Tools..."
+  xcode-select --install
+  echo "Waiting for installation to finish (accept the dialog)..."
+  until xcode-select -p &> /dev/null; do sleep 5; done
+fi
+
+####################################################################
 # Installing brew packages
 ####################################################################
 
@@ -114,7 +125,22 @@ mkdir -p ~/src/private
 
 
 ####################################################################
-# Last steps
+# Next steps
 ####################################################################
 
-echo "Done :)"
+cat <<EOF
+
+Setup complete! Next steps:
+
+  1. Open a new terminal so fish becomes the active shell.
+  2. Authenticate the GitHub CLI:
+       gh auth login
+  3. Generate an SSH key (if you don't have one) and add it to GitHub:
+       ssh-keygen -t ed25519 -C "your.email@example.com"
+       gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(scutil --get ComputerName)"
+  4. Sign in to Claude Code:
+       claude /login
+  5. Configure opencode providers:
+       opencode auth login
+
+EOF
