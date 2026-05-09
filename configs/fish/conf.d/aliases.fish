@@ -14,6 +14,9 @@ alias be="b exec"
 alias bo="b open"
 alias bu="b update"
 
+# Elixir / Phoenix
+alias ixs="iex -S mix phx.server"
+
 # Unix
 alias ll="ls -al"
 alias ln="ln -v"
