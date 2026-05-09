@@ -1,9 +1,9 @@
 # Disable greeting
 set -g fish_greeting
 
-# Asdf integration (legacy shell-based versions)
-if test -f $HOME/.asdf/asdf.fish
-    source $HOME/.asdf/asdf.fish
+# Asdf shims (asdf v0.16+ is Go-based; just needs shims on PATH)
+if test -d $HOME/.asdf/shims
+    fish_add_path -p $HOME/.asdf/shims
 end
 
 # Autojump

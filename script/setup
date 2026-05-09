@@ -85,21 +85,21 @@ echo "Installing asdf..."
 
 if command_exists asdf
 then
-  echo "Skipping installation, Elixir is already installed"
+  echo "Skipping installation, asdf is already installed"
 else
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.6.3
+  brew install asdf
 
   echo "Adding asdf plugins..."
-  asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-  asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
+  asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
+  asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
 
   echo "Installing Erlang versions..."
   asdf install erlang ${ERLANG_VERSION}
-  asdf global erlang ${ERLANG_VERSION}
+  asdf set -u erlang ${ERLANG_VERSION}
 
   echo "Installing Elixir versions..."
   asdf install elixir ${ELIXIR_VERSION}
-  asdf global elixir ${ELIXIR_VERSION}
+  asdf set -u elixir ${ELIXIR_VERSION}
 
   echo "Erlang ${ERLANG_VERSION} and Elixir ${ELIXIR_VERSION} installed correctly!"
 fi
