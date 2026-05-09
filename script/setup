@@ -84,6 +84,22 @@ asdf install elixir ${ELIXIR_VERSION}
 asdf set -u elixir ${ELIXIR_VERSION}
 
 ####################################################################
+# Linking Claude Code agents and skills
+####################################################################
+
+echo "Linking Claude Code agents and skills..."
+
+mkdir -p ~/.claude/agents ~/.claude/skills
+
+for agent in ${DOTFILES}/claude/agents/*.md; do
+  ln -sf "${agent}" ~/.claude/agents/
+done
+
+for skill in ${DOTFILES}/claude/skills/*/; do
+  ln -sf "${skill%/}" ~/.claude/skills/
+done
+
+####################################################################
 # Setup src/ directory
 ####################################################################
 
