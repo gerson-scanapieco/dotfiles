@@ -3,9 +3,10 @@
 # Dotfiles vars
 export DOTFILES="${HOME}/.dotfiles"
 export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
-export RUBY_VERSION="2.7.1"
-export ERLANG_VERSION="22.0.7"
-export ELIXIR_VERSION="1.10.0"
+export RUBY_VERSION="3.4.3"
+export ERLANG_VERSION="28.5"
+export ELIXIR_VERSION="1.19.5"
+export NODEJS_VERSION="24.15.0"
 
 command_exists () {
   command "$1" &> /dev/null ;
@@ -13,41 +14,46 @@ command_exists () {
 
 
 ####################################################################
+# Installing Xcode Command Line Tools
+####################################################################
+
+if ! xcode-select -p &> /dev/null; then
+  echo "Installing Xcode Command Line Tools..."
+  xcode-select --install
+  echo "Waiting for installation to finish (accept the dialog)..."
+  until xcode-select -p &> /dev/null; do sleep 5; done
+fi
+
+####################################################################
+# Installing brew packages
+####################################################################
+
+echo "Installing packages from Brewfile..."
+brew bundle
+
+####################################################################
 # Configuring the shell
 ####################################################################
 
-echo "Installing Oh my ZSH..."
+fish_path=$(command -v fish)
 
-if ![ -d "$HOME"/.oh-my-zsh ]; then
-  git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-  
-  echo "Done!"
-else
-  echo "ZSH is already installed!"
+# Register fish in /etc/shells so chsh accepts it
+if ! grep -qx "${fish_path}" /etc/shells; then
+  echo "${fish_path}" | sudo tee -a /etc/shells
 fi
 
-# Use ZSH as shell
-chsh -s /bin/zsh
+# Use fish as default shell
+chsh -s "${fish_path}"
 
-# Iterm2 integration
-curl -Ls https://iterm2.com/misc/zsh_startup.in -o ${HOME}/.iterm2_shell_integration.zsh
+# Symlink fish config
+mkdir -p ~/.config/fish
+ln -sf ${DOTFILES_CONFIGS_DIR}/fish/config.fish ~/.config/fish/config.fish
+ln -sf ${DOTFILES_CONFIGS_DIR}/fish/conf.d ~/.config/fish/conf.d
 
-echo "Installing ZSH pure prompt..."
-npm install --global pure-prompt
-
-# Create symbolic links
-ln -sf ${DOTFILES_CONFIGS_DIR}/zshrc ~/.zshrc
+# Symlink starship config
+ln -sf ${DOTFILES_CONFIGS_DIR}/starship.toml ~/.config/starship.toml
 
 echo "Shell configured!"
-
-####################################################################
-# Configuring iTerm2
-####################################################################
-
-echo "Setting iterm2 preferences folder..."
-# defaults write com.googlecode.iterm2 "PrefsCustomFolder" -string "~/dotfiles/iterm"
-# defaults write com.googlecode.iterm2 "LoadPrefsFromCustomFolder" -bool true
-echo "iTerm2 configured!"
 
 ####################################################################
 # Configuring Git
@@ -63,59 +69,52 @@ ln -sf ${DOTFILES_CONFIGS_DIR}/gitmessage ~/.gitmessage
 echo "Done!"
 
 ####################################################################
-# Configuring Ruby
+# Configuring asdf-managed languages
 ####################################################################
 
-echo "Configuring Ruby..."
+echo "Configuring asdf-managed languages..."
 
-if command_exists rbenv
-then
-  echo "Ruby is already configured!"
-else
-  ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
-  ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
+ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
+ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
+touch ~/.irb-history
 
-  # Create default file to irb history
-  touch ~/.irb-history
+echo "Adding asdf plugins..."
+asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
+asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git || true
+asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git || true
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
 
-  echo "Installing ruby versions..."
-  rbenv install ${RUBY_VERSION}
-  rbenv global ${RUBY_VERSION}
-  echo "Ruby ${RUBY_VERSION} installed correctly!"
-fi
+echo "Installing Ruby ${RUBY_VERSION}..."
+asdf install ruby ${RUBY_VERSION}
+asdf set -u ruby ${RUBY_VERSION}
+
+echo "Installing Erlang ${ERLANG_VERSION}..."
+asdf install erlang ${ERLANG_VERSION}
+asdf set -u erlang ${ERLANG_VERSION}
+
+echo "Installing Elixir ${ELIXIR_VERSION}..."
+asdf install elixir ${ELIXIR_VERSION}
+asdf set -u elixir ${ELIXIR_VERSION}
+
+echo "Installing Node.js ${NODEJS_VERSION}..."
+asdf install nodejs ${NODEJS_VERSION}
+asdf set -u nodejs ${NODEJS_VERSION}
 
 ####################################################################
-# Configuring Erlang/Elixir
+# Linking Claude Code agents and skills
 ####################################################################
 
-echo "Configuring Elixir..."
-echo "Installing asdf..."
+echo "Linking Claude Code agents and skills..."
 
-if command_exists asdf
-then
-  echo "Skipping installation, Elixir is already installed"
-else
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.6.3
+mkdir -p ~/.claude/agents ~/.claude/skills
 
-  echo "Configuring asdf..."
+for agent in ${DOTFILES}/claude/agents/*.md; do
+  ln -sf "${agent}" ~/.claude/agents/
+done
 
-  echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
-  echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
-
-  echo "Adding asdf plugins..."
-  asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-  asdf plugin-add elixir https://github.com/asdf-vm/asdf-elixir.git
-
-  echo "Installing Erlang versions..."
-  asdf install erlang ${ERLANG_VERSION}
-  asdf global erlang ${ERLANG_VERSION}
-
-  echo "Installing Elixir versions..."
-  asdf install elixir ${ELIXIR_VERSION}
-  asdf global elixir ${ELIXIR_VERSION}
-
-  echo "Erlang ${ERLANG_VERSION} and Elixir ${ELIXIR_VERSION} installed correctly!"
-fi
+for skill in ${DOTFILES}/claude/skills/*/; do
+  ln -sf "${skill%/}" ~/.claude/skills/
+done
 
 ####################################################################
 # Setup src/ directory
@@ -126,7 +125,22 @@ mkdir -p ~/src/private
 
 
 ####################################################################
-# Last steps
+# Next steps
 ####################################################################
 
-echo "Done :)"
+cat <<EOF
+
+Setup complete! Next steps:
+
+  1. Open a new terminal so fish becomes the active shell.
+  2. Authenticate the GitHub CLI:
+       gh auth login
+  3. Generate an SSH key (if you don't have one) and add it to GitHub:
+       ssh-keygen -t ed25519 -C "your.email@example.com"
+       gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(scutil --get ComputerName)"
+  4. Sign in to Claude Code:
+       claude /login
+  5. Configure opencode providers:
+       opencode auth login
+
+EOF
