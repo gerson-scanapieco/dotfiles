@@ -13,6 +13,7 @@ brew 'zoxide'
 brew 'asdf'
 brew 'fish'
 brew 'opencode'
+brew 'starship'
 
 cask 'caffeine'
 cask 'claude-code'

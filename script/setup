@@ -38,6 +38,9 @@ mkdir -p ~/.config/fish
 ln -sf ${DOTFILES_CONFIGS_DIR}/fish/config.fish ~/.config/fish/config.fish
 ln -sf ${DOTFILES_CONFIGS_DIR}/fish/conf.d ~/.config/fish/conf.d
 
+# Symlink starship config
+ln -sf ${DOTFILES_CONFIGS_DIR}/starship.toml ~/.config/starship.toml
+
 echo "Shell configured!"
 
 ####################################################################

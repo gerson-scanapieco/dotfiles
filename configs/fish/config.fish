@@ -15,3 +15,8 @@ end
 if command -q fzf
     fzf --fish | source
 end
+
+# Starship prompt
+if command -q starship
+    starship init fish | source
+end
