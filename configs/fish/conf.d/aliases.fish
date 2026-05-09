@@ -4,6 +4,9 @@ alias dockercleanc='printf "\n>>> Deleting stopped containers\n\n"; and docker r
 alias dockercleani='printf "\n>>> Deleting untagged images\n\n"; and docker rmi (docker images -q -f dangling=true)'
 alias dockerclean='dockercleanc; or true; and dockercleani'
 
+# Git
+abbr -a g git
+
 # Bundler
 alias b="bundle"
 alias bi="b install --jobs=2"

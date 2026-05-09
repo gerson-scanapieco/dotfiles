@@ -1,3 +1,6 @@
+# Add Homebrew to PATH (must come first)
+fish_add_path /opt/homebrew/bin
+
 # Disable greeting
 set -g fish_greeting
 
@@ -6,17 +9,19 @@ if test -d $HOME/.asdf/shims
     fish_add_path -p $HOME/.asdf/shims
 end
 
-# Zoxide
-if command -q zoxide
-    zoxide init fish | source
-end
+if status is-interactive
+    # Zoxide
+    if command -q zoxide
+        zoxide init fish | source
+    end
 
-# Fzf keybindings and fuzzy completion
-if command -q fzf
-    fzf --fish | source
-end
+    # Fzf keybindings and fuzzy completion
+    if command -q fzf
+        fzf --fish | source
+    end
 
-# Starship prompt
-if command -q starship
-    starship init fish | source
+    # Starship prompt
+    if command -q starship
+        starship init fish | source
+    end
 end
