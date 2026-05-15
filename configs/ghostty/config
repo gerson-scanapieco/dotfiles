@@ -1,0 +1,7 @@
+keybind = shift+enter=text:\n
+font-size = 15
+unfocused-split-opacity = 0.2
+split-divider-color = #7cfc00
+
+# Use prerelease builds
+auto-update-channel = tip

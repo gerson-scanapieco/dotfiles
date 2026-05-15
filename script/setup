@@ -53,6 +53,10 @@ ln -sf ${DOTFILES_CONFIGS_DIR}/fish/conf.d ~/.config/fish/conf.d
 # Symlink starship config
 ln -sf ${DOTFILES_CONFIGS_DIR}/starship.toml ~/.config/starship.toml
 
+# Symlink ghostty config
+mkdir -p ~/.config/ghostty
+ln -sf ${DOTFILES_CONFIGS_DIR}/ghostty/config ~/.config/ghostty/config
+
 echo "Shell configured!"
 
 ####################################################################
