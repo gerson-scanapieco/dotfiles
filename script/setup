@@ -80,7 +80,6 @@ echo "Done!"
 echo "Configuring asdf-managed languages..."
 
 ln -sf ${DOTFILES_CONFIGS_DIR}/gemrc ~/.gemrc
-ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
 touch ~/.irb-history
 
 echo "Adding asdf plugins..."
