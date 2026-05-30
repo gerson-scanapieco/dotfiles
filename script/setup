@@ -84,10 +84,10 @@ ln -sf ${DOTFILES_CONFIGS_DIR}/railsrc ~/.railsrc
 touch ~/.irb-history
 
 echo "Adding asdf plugins..."
-asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
-asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git || true
-asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git || true
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
+asdf plugin add ruby || true
+asdf plugin add erlang || true
+asdf plugin add elixir || true
+asdf plugin add nodejs || true
 
 echo "Installing Ruby ${RUBY_VERSION}..."
 asdf install ruby ${RUBY_VERSION}
