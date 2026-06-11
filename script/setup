@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Dotfiles vars
-export DOTFILES="${HOME}/.dotfiles"
+export DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
 export RUBY_VERSION="3.4.3"
 export ERLANG_VERSION="28.5"
@@ -141,8 +141,9 @@ done
 # Setup src/ directory
 ####################################################################
 
-echo "Creating src directory..."
+echo "Creating src directories..."
 mkdir -p ~/src/private
+mkdir -p ~/src/work
 
 
 ####################################################################

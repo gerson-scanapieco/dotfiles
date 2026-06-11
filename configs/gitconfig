@@ -23,14 +23,14 @@
   name = Gerson Scanapieco
   email = gerson.scanapieco@gmail.com
 
-[includeIf "gitdir:~/src/private/"]
+[includeIf "gitdir:~/src/work/"]
   path = ~/.gitconfig-work
 
 [pull]
   rebase = true
 
 [core]
-  editor = subl -w -n
+  editor = code -w
   excludesfile = ~/.gitignore
   pager = diff-so-fancy | less --tabs=1,5 -R
   
@@ -45,3 +45,9 @@
 
 [rebase]
   autosquash = true
+
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process

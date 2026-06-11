@@ -1,7 +1,7 @@
 ---
 name: spec
 description: Define and organize work scope from a vague problem description or rough Linear issue. Researches the codebase, asks clarifying questions, drafts well-scoped Linear issues with sub-tasks and dependencies, and creates them after developer approval. Use when starting new work that needs scoping.
-allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Glob(*), Grep(*), Read(*)
+allowed-tools: tidewave(*), linear-server(*), notion(*), Bash(git:*), Glob(*), Grep(*), Read(*)
 argument-hint: [problem description or Linear issue ID]
 ---
 

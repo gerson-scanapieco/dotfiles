@@ -1,5 +1,5 @@
 ---
-name: linear-execute
+name: execute
 allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Bash(mix:*), Bash(gh:*), sequential-thinking(*), Glob(*), Grep(*), Read(*), Write(*), Edit(*)
 description: Read an issue from Linear and implement it exactly as specified. Creates a branch, writes tests first, implements the feature, commits frequently, opens a PR, and updates the Linear issue.
 argument-hint: [Linear issue ID]
@@ -19,7 +19,7 @@ Read the contents of Linear issue $ARGUMENTS, including attachments. If the issu
 
 ### Phase 2: Execute the plan
 
-- **MANDATORY**: Create a new git branch for the work. It should be named after the Linear ticket identifier
+- **MANDATORY**: Check if current branch is associated with the given Linear identifier. If not, create a new git branch for the work. It should be named after the Linear ticket identifier
 - **MANDATORY**: Start by implementing the unit tests for the feature EXACTLY as it is specified
 - **MANDATORY**: Perform the feature implementation described in the ticket EXACTLY as it is specified
 - **MANDATORY**: If there is missing information, describe your assumptions before proceeding
@@ -30,7 +30,7 @@ Read the contents of Linear issue $ARGUMENTS, including attachments. If the issu
 ### Phase 3: Open Pull Request
 
 - **MANDATORY**: Push the branch to the remote repository
-- **MANDATORY**: Open a PR via `gh pr create` targeting `main` with:
+- **MANDATORY**: Open a draft PR via `gh pr create` targeting `main` with:
   - A short, descriptive PR title (under 70 characters)
   - A PR body that includes:
     - Summary of changes (2-3 sentences)
