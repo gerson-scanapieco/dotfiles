@@ -41,6 +41,9 @@ fi
 echo "Installing packages from Brewfile..."
 brew bundle
 
+# Force-link yazi preview deps over their keg-only/default counterparts
+brew link ffmpeg-full imagemagick-full -f --overwrite
+
 ####################################################################
 # Configuring the shell
 ####################################################################
