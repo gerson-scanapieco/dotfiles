@@ -29,7 +29,7 @@ cask 'font-symbols-only-nerd-font'
 
 cask 'caffeine'
 cask 'claude-code'
-cask 'docker'
+cask 'docker-desktop'
 cask 'ghostty'
 cask 'insomnia'
 cask 'kap'
