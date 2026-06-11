@@ -1,0 +1,7 @@
+[opener]
+# Override the default `edit` opener so yazi doesn't block on VS Code.
+# $EDITOR stays "code -w" globally (git commit, crontab, etc. need a blocking
+# editor); yazi alone uses `code` without --wait and detaches it as an orphan.
+edit = [
+  { run = 'code "$@"', desc = "VS Code", orphan = true, for = "unix" },
+]

@@ -71,6 +71,10 @@ ln -sf ${DOTFILES_CONFIGS_DIR}/starship.toml ~/.config/starship.toml
 mkdir -p ~/.config/ghostty
 ln -sf ${DOTFILES_CONFIGS_DIR}/ghostty/config ~/.config/ghostty/config
 
+# Symlink yazi config
+mkdir -p ~/.config/yazi
+ln -sf ${DOTFILES_CONFIGS_DIR}/yazi/yazi.toml ~/.config/yazi/yazi.toml
+
 echo "Shell configured!"
 
 ####################################################################
