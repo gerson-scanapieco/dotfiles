@@ -5,7 +5,7 @@ export DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
 export RUBY_VERSION="3.4.3"
 export ERLANG_VERSION="28.5"
-export ELIXIR_VERSION="1.19.5"
+export ELIXIR_VERSION="1.19.5-otp-28"
 export NODEJS_VERSION="24.15.0"
 
 command_exists () {
