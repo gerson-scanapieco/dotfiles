@@ -129,11 +129,13 @@ echo "Linking Claude Code agents and skills..."
 
 mkdir -p ~/.claude/agents ~/.claude/skills
 
-for agent in ${DOTFILES}/claude/agents/*.md; do
+ln -sf ${DOTFILES_CONFIGS_DIR}/claude/settings.json ~/.claude/settings.json
+
+for agent in ${DOTFILES_CONFIGS_DIR}/claude/agents/*.md; do
   ln -sf "${agent}" ~/.claude/agents/
 done
 
-for skill in ${DOTFILES}/claude/skills/*/; do
+for skill in ${DOTFILES_CONFIGS_DIR}/claude/skills/*/; do
   ln -sf "${skill%/}" ~/.claude/skills/
 done
 
