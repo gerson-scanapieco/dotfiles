@@ -5,3 +5,6 @@
 edit = [
   { run = 'code "$@"', desc = "VS Code", orphan = true, for = "unix" },
 ]
+
+[mgr]
+linemode = "mtime"

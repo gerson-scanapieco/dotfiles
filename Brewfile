@@ -1,6 +1,8 @@
 # specify a directory to install
 cask_args appdir: '/Applications'
 
+tap 'manaflow-ai/cmux'
+
 brew 'cmake'
 brew 'coreutils'
 
@@ -29,8 +31,8 @@ cask 'font-symbols-only-nerd-font'
 
 cask 'caffeine'
 cask 'claude-code'
+cask 'cmux'
 cask 'docker-desktop'
-cask 'ghostty'
 cask 'insomnia'
 cask 'kap'
 cask 'notion'
