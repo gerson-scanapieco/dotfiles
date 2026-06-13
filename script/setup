@@ -138,6 +138,15 @@ for skill in ${DOTFILES}/claude/skills/*/; do
 done
 
 ####################################################################
+# Installing Claude Code plugins
+####################################################################
+
+echo "Installing Claude Code plugins..."
+
+claude plugin marketplace add braintrustdata/braintrust-claude-plugin
+claude plugin install braintrust@braintrust-claude-plugin
+
+####################################################################
 # Setup src/ directory
 ####################################################################
 
@@ -164,5 +173,11 @@ Setup complete! Next steps:
        claude /login
   5. Configure opencode providers:
        opencode auth login
+  6. Set your Braintrust API key in ~/.claude/settings.local.json:
+       {
+         "env": {
+           "BRAINTRUST_API_KEY": "YOUR_API_KEY"
+         }
+       }
 
 EOF
