@@ -145,7 +145,6 @@ done
 
 echo "Installing Claude Code plugins..."
 
-claude plugin marketplace add braintrustdata/braintrust-claude-plugin
 claude plugin install braintrust@braintrust-claude-plugin
 
 ####################################################################
