@@ -25,8 +25,6 @@ You are helping a **reviewer** understand how a set of changes affects the proje
 
 4. **Write the summary** using the shape and language rules below.
 
-5. **Draw a mermaid diagram only if the change is complex** — see *Diagrams*.
-
 ## The 12-year-old test
 
 Before using a word, ask: would a smart 12-year-old know it? If a word describes the code by comparison to another field, replace it with what is literally happening.
@@ -44,14 +42,6 @@ Say "the code that runs first" not "the entry point". Say "calls" not "reaches i
 - **Name real things.** Use the actual module, class, function, and table names — they are the layout the reviewer is tracking.
 - **No praise, no filler.** No "this is a clean refactor", no "let me know if you have questions".
 
-## Diagrams
-
-Draw **one** mermaid diagram only when the change adds or removes a relationship between parts — a new module calling an existing one, a changed order of calls, a new table and how it links to others. If the change stays inside one function, skip the diagram; prose is clearer.
-
-- Call/data flow → `flowchart`. Database change → `erDiagram`.
-- Cap it at ~7 nodes. If it needs more, the change is too big for one picture — draw only the part that changed and its immediate neighbours.
-- Mark what changed (e.g. a comment or a distinct node label) so the reviewer sees the delta, not the whole system.
-
 ## Output shape
 
 ```
@@ -62,9 +52,6 @@ Draw **one** mermaid diagram only when the change adds or removes a relationship
 
 ## Why it matters for the design
 [How the layout, data storage, or running services now differ. New relationships, removed ones, shifted responsibilities.]
-
-## Diagram
-[Only if complex. A single mermaid block.]
 
 ## Watch for
 [Short list: delegated implementation a reviewer should double-check — edge cases, error handling, security-sensitive spots, data changes that are hard to undo. Skip if nothing stands out.]
