@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+AGENTS_CONFIG_DIR="${DOTFILES}/configs/agents"
+
+link_settings() {
+  local source="$1"
+  local target="$2"
+
+  if [ -e "${target}" ] && [ ! -L "${target}" ] && ! cmp -s "${source}" "${target}"; then
+    echo "Skipping existing Claude settings: ${target}"
+    return
+  fi
+
+  ln -sfn "${source}" "${target}"
+  echo "Linked Claude settings: ${target}"
+}
+
+link_skill() {
+  local source="$1"
+  local target="$2"
+
+  if [ -e "${target}" ] && [ ! -L "${target}" ]; then
+    echo "Skipping existing non-symlink skill: ${target}"
+    return
+  fi
+
+  ln -sfn "${source}" "${target}"
+  echo "Linked skill: ${target}"
+}
+
+mkdir -p ~/.agents/skills ~/.claude/skills
+
+link_settings "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json
+
+for skill in "${AGENTS_CONFIG_DIR}"/skills/*/; do
+  skill="${skill%/}"
+  skill_name="$(basename "${skill}")"
+
+  link_skill "${skill}" "${HOME}/.agents/skills/${skill_name}"
+  link_skill "${skill}" "${HOME}/.claude/skills/${skill_name}"
+done

@@ -122,22 +122,11 @@ asdf install nodejs ${NODEJS_VERSION}
 asdf set -u nodejs ${NODEJS_VERSION}
 
 ####################################################################
-# Linking Claude Code agents and skills
+# Initializing agent settings and skills
 ####################################################################
 
-echo "Linking Claude Code agents and skills..."
-
-mkdir -p ~/.claude/agents ~/.claude/skills
-
-ln -sf ${DOTFILES_CONFIGS_DIR}/claude/settings.json ~/.claude/settings.json
-
-for agent in ${DOTFILES_CONFIGS_DIR}/claude/agents/*.md; do
-  ln -sf "${agent}" ~/.claude/agents/
-done
-
-for skill in ${DOTFILES_CONFIGS_DIR}/claude/skills/*/; do
-  ln -sf "${skill%/}" ~/.claude/skills/
-done
+echo "Initializing agent settings and skills..."
+"${DOTFILES}/script/init-agents"
 
 ####################################################################
 # Installing Claude Code plugins
