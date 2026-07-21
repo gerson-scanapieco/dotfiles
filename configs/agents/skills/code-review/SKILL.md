@@ -1,10 +1,11 @@
 ---
 name: code-review
-description: Review a GitHub pull request or the current branch for correctness, regressions, and repository-convention violations. Use when asked to review code, a PR URL or number, or a branch before publication; accept an optional PR URL, PR number, or `branch` argument.
+description: Review a GitHub pull request or the current branch for correctness, regressions, and repository-convention violations. Use when asked to review code, a PR URL or number, or a branch before publication; accept an optional PR URL, PR number, or `branch` argument, plus an optional `--post` flag to publish findings as PR review comments.
+argument-hint: "[pr-url|pr-number|branch] [--post]"
 allowed-tools: Bash(git:*), Bash(gh:*), Glob(*), Grep(*), Read(*)
 ---
 
-Review the requested change rigorously. Report only actionable issues that are introduced by the change and likely to matter in production. Do not publish review comments unless the user explicitly asks.
+Review the requested change rigorously. Report only actionable issues that are introduced by the change and likely to matter in production.
 
 ## Target
 
@@ -28,3 +29,10 @@ Review the requested change rigorously. Report only actionable issues that are i
 - For each finding, state the severity, affected file and line, concrete failure mode, and concise rationale. Link to the exact PR file range when a PR is available.
 - Do not manufacture findings. If none survive verification, say `No actionable issues found.`
 - Keep the review concise. Lead with findings, then list any remaining assumptions or scope limitations.
+
+## Publishing
+
+Arguments: $ARGUMENTS
+
+- By default, report findings in chat only. Do not publish anything.
+- If the arguments contain the literal token `--post`, publish each finding as an inline PR review comment (`gh pr review --comment` or `gh api` for line-anchored comments), plus a short summary comment, once findings are finalized. Skip publishing if there is no open PR to attach comments to.
