@@ -1,0 +1,7 @@
+interface:
+  display_name: "Address PR Threads"
+  short_description: "Assess and address GitHub PR review threads"
+  default_prompt: "Use $address-pr-threads to assess the current branch PR review threads."
+
+policy:
+  allow_implicit_invocation: false
