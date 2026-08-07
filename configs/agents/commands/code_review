@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  code_review PR_URL [MODEL] [--no-push]
+  code_review PR_URL [--model NAME|MODEL_SHORTCUT] [--no-push]
   code_review help
 
 Runs the code-review skill against a GitHub pull request in headless mode.
@@ -13,7 +13,10 @@ Claude models use Claude Code; GPT models use Codex. Reviews are posted to
 GitHub by default. Use --no-push to print the review without publishing it.
 Run the command from a checkout of the repository that owns the pull request.
 
-Claude models:
+Model selection:
+  --model NAME        Select a Claude alias or GPT model by name
+
+Claude shortcuts:
   --opus              Claude Opus (default)
   --sonnet            Claude Sonnet
 
@@ -106,6 +109,14 @@ push=true
 
 while (($#)); do
   case "$1" in
+    --model)
+      shift
+      (($#)) || fail "--model requires a model name"
+      case "$1" in
+        opus|sonnet|gpt-*) select_model "$1" "--model $1" ;;
+        *) fail "unsupported model: $1" ;;
+      esac
+      ;;
     --opus)
       select_model "opus" "$1"
       ;;
