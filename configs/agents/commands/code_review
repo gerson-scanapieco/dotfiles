@@ -11,6 +11,7 @@ Usage:
 Runs the code-review skill against a GitHub pull request in headless mode.
 Claude models use Claude Code; GPT models use Codex. Reviews are posted to
 GitHub by default. Use --no-push to print the review without publishing it.
+Run the command from a checkout of the repository that owns the pull request.
 
 Claude models:
   --opus              Claude Opus (default)
@@ -48,6 +49,29 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
 }
 
+verify_repository() {
+  local remote_name
+  local remote_repository
+  local remote_url
+
+  require_command git
+  while IFS= read -r remote_name; do
+    while IFS= read -r remote_url; do
+      case "$remote_url" in
+        git@github.com:*) remote_repository="${remote_url#git@github.com:}" ;;
+        https://github.com/*) remote_repository="${remote_url#https://github.com/}" ;;
+        ssh://git@github.com/*) remote_repository="${remote_url#ssh://git@github.com/}" ;;
+        *) continue ;;
+      esac
+
+      remote_repository="${remote_repository%.git}"
+      [[ "$remote_repository" == "$pr_repository" ]] && return
+    done < <(git remote get-url --all "$remote_name")
+  done < <(git remote)
+
+  fail "no GitHub remote in the current repository matches $pr_repository"
+}
+
 model="opus"
 pr_url=""
 push=true
@@ -82,7 +106,10 @@ while (($#)); do
 done
 
 [[ -n "$pr_url" ]] || fail "a PR URL is required"
-[[ "$pr_url" =~ ^https://github\.com/[^/]+/[^/]+/pull/[0-9]+/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
+[[ "$pr_url" =~ ^https://github\.com/([^/]+)/([^/]+)/pull/[0-9]+/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
+pr_repository="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+verify_repository
+require_command gh
 
 skill_arguments="$pr_url"
 if [[ "$push" == true ]]; then
