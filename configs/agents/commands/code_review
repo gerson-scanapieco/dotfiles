@@ -49,6 +49,12 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
 }
 
+select_model() {
+  [[ -z "$model_option" ]] || fail "model options cannot be combined: $model_option and $2"
+  model="$1"
+  model_option="$2"
+}
+
 verify_repository() {
   local remote_name
   local remote_repository
@@ -73,19 +79,20 @@ verify_repository() {
 }
 
 model="opus"
+model_option=""
 pr_url=""
 push=true
 
 while (($#)); do
   case "$1" in
     --opus)
-      model="opus"
+      select_model "opus" "$1"
       ;;
     --sonnet)
-      model="sonnet"
+      select_model "sonnet" "$1"
       ;;
     --gpt-*)
-      model="${1#--}"
+      select_model "${1#--}" "$1"
       ;;
     --no-push)
       push=false
