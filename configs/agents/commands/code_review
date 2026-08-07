@@ -89,6 +89,7 @@ prepare_read_only_context() {
   review_metadata_file="$(mktemp -t code-review-metadata.XXXXXX)"
   review_diff_file="$(mktemp -t code-review-diff.XXXXXX)"
   review_comments_file="$(mktemp -t code-review-comments.XXXXXX)"
+  review_context_directory="${review_metadata_file%/*}"
   trap cleanup_context EXIT
 
   gh pr view "$pr_url" \
@@ -171,6 +172,7 @@ case "$model" in
         --model "$model" \
         --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
         --permission-mode dontAsk \
+        --add-dir "$review_context_directory" \
         --strict-mcp-config \
         --mcp-config '{"mcpServers":{}}' \
         --output-format text
