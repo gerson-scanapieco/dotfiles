@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  code_review PR_URL [MODEL] [--no-push]
+  code_review help
+
+Runs the code-review skill against a GitHub pull request in headless mode.
+Claude models use Claude Code; GPT models use Codex. Reviews are posted to
+GitHub by default. Use --no-push to print the review without publishing it.
+
+Claude models:
+  --opus              Claude Opus (default)
+  --sonnet            Claude Sonnet
+
+Codex models detected from the installed CLI:
+EOF
+
+  print_codex_models
+}
+
+print_codex_models() {
+  local models=""
+
+  if command -v codex >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    models="$(codex debug models 2>/dev/null | jq -r '.models[] | select(.visibility == "list") | .slug' 2>/dev/null)" || models=""
+  fi
+
+  if [[ -z "$models" ]]; then
+    models=$'gpt-5.6-sol\ngpt-5.6-terra\ngpt-5.6-luna\ngpt-5.5\ngpt-5.2'
+  fi
+
+  while IFS= read -r codex_model; do
+    printf '  --%-18s Codex\n' "$codex_model"
+  done <<< "$models"
+}
+
+fail() {
+  printf 'code_review: %s\n' "$1" >&2
+  printf 'Try code_review --help for usage.\n' >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
+}
+
+model="opus"
+pr_url=""
+push=true
+
+while (($#)); do
+  case "$1" in
+    --opus)
+      model="opus"
+      ;;
+    --sonnet)
+      model="sonnet"
+      ;;
+    --gpt-*)
+      model="${1#--}"
+      ;;
+    --no-push)
+      push=false
+      ;;
+    help|-h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      fail "unknown option: $1"
+      ;;
+    *)
+      [[ -z "$pr_url" ]] || fail "only one PR URL may be provided"
+      pr_url="$1"
+      ;;
+  esac
+  shift
+done
+
+[[ -n "$pr_url" ]] || fail "a PR URL is required"
+[[ "$pr_url" =~ ^https://github\.com/[^/]+/[^/]+/pull/[0-9]+/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
+
+skill_arguments="$pr_url"
+if [[ "$push" == true ]]; then
+  skill_arguments+=" --post"
+fi
+
+case "$model" in
+  opus|sonnet)
+    require_command claude
+    exec claude -p "/code-review $skill_arguments" \
+      --model "$model" \
+      --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
+      --output-format text
+    ;;
+  gpt-*)
+    require_command codex
+    exec codex exec \
+      --model "$model" \
+      --sandbox workspace-write \
+      --config sandbox_workspace_write.network_access=true \
+      --ephemeral \
+      "\$code-review $skill_arguments"
+    ;;
+esac

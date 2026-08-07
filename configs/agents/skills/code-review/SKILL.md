@@ -12,7 +12,7 @@ Review the requested change rigorously. Report only actionable issues that are i
 - With a PR URL or number, review that pull request.
 - With `branch`, find the pull request for the current branch. If none exists, compare the branch against its merge base with the default branch.
 - With no argument, review the pull request for the current branch; otherwise review the uncommitted and committed changes against the merge base.
-- If the target is a draft, closed, automated, or trivially mechanical change, say so and stop unless the user asks to continue.
+- Review draft pull requests normally. If the target is closed, automated, or trivially mechanical, say so and stop unless the user asks to continue.
 
 ## Investigation
 

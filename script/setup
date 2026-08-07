@@ -122,10 +122,10 @@ asdf install nodejs ${NODEJS_VERSION}
 asdf set -u nodejs ${NODEJS_VERSION}
 
 ####################################################################
-# Initializing agent settings and skills
+# Initializing agent settings, skills, and commands
 ####################################################################
 
-echo "Initializing agent settings and skills..."
+echo "Initializing agent settings, skills, and commands..."
 "${DOTFILES}/script/init-agents"
 
 ####################################################################
