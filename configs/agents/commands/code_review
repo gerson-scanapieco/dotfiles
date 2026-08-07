@@ -78,6 +78,27 @@ verify_repository() {
   fail "no GitHub remote in the current repository matches $pr_repository"
 }
 
+cleanup_context() {
+  rm -f -- "${review_metadata_file:-}" "${review_diff_file:-}" "${review_comments_file:-}"
+}
+
+prepare_read_only_context() {
+  review_metadata_file="$(mktemp -t code-review-metadata.XXXXXX)"
+  review_diff_file="$(mktemp -t code-review-diff.XXXXXX)"
+  review_comments_file="$(mktemp -t code-review-comments.XXXXXX)"
+  trap cleanup_context EXIT
+
+  gh pr view "$pr_url" \
+    --json author,baseRefName,body,comments,commits,files,headRefName,isDraft,number,reviews,state,statusCheckRollup,title,url \
+    > "$review_metadata_file"
+  gh pr diff "$pr_url" > "$review_diff_file"
+  gh api --method GET --paginate --slurp \
+    "repos/$pr_repository/pulls/$pr_number/comments" \
+    > "$review_comments_file"
+
+  skill_arguments+=" Use the pre-fetched GitHub data instead of running gh. Metadata: $review_metadata_file. Diff: $review_diff_file. Inline review comments: $review_comments_file. Do not publish or perform external writes."
+}
+
 model="opus"
 model_option=""
 pr_url=""
@@ -113,31 +134,54 @@ while (($#)); do
 done
 
 [[ -n "$pr_url" ]] || fail "a PR URL is required"
-[[ "$pr_url" =~ ^https://github\.com/([^/]+)/([^/]+)/pull/[0-9]+/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
+[[ "$pr_url" =~ ^https://github\.com/([^/]+)/([^/]+)/pull/([0-9]+)/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
 pr_repository="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+pr_number="${BASH_REMATCH[3]}"
 verify_repository
 require_command gh
 
 skill_arguments="$pr_url"
 if [[ "$push" == true ]]; then
   skill_arguments+=" --post"
+else
+  prepare_read_only_context
 fi
 
 case "$model" in
   opus|sonnet)
     require_command claude
-    exec claude -p "/code-review $skill_arguments" \
-      --model "$model" \
-      --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
-      --output-format text
+    if [[ "$push" == true ]]; then
+      claude -p "/code-review $skill_arguments" \
+        --model "$model" \
+        --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
+        --output-format text
+    else
+      claude -p "/code-review $skill_arguments" \
+        --model "$model" \
+        --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
+        --permission-mode dontAsk \
+        --strict-mcp-config \
+        --mcp-config '{"mcpServers":{}}' \
+        --output-format text
+    fi
     ;;
   gpt-*)
     require_command codex
-    exec codex exec \
-      --model "$model" \
-      --sandbox workspace-write \
-      --config sandbox_workspace_write.network_access=true \
-      --ephemeral \
-      "\$code-review $skill_arguments"
+    if [[ "$push" == true ]]; then
+      codex exec \
+        --model "$model" \
+        --sandbox workspace-write \
+        --config sandbox_workspace_write.network_access=true \
+        --ephemeral \
+        "\$code-review $skill_arguments"
+    else
+      codex exec \
+        --model "$model" \
+        --sandbox read-only \
+        --config approval_policy=never \
+        --ignore-user-config \
+        --ephemeral \
+        "\$code-review $skill_arguments"
+    fi
     ;;
 esac
