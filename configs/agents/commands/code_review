@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  code_review PR_URL [MODEL_OPTION] [--no-push|--no-post]
+  code_review PR_URL [MODEL_OPTION] [--effort LEVEL] [--no-push|--no-post]
   code_review help
 
 Runs the code-review skill against a GitHub pull request in headless mode.
@@ -15,6 +15,7 @@ Run the command from a checkout of the repository that owns the pull request.
 
 Model selection:
   --model NAME        Select a Claude alias or full GPT model ID
+  --effort LEVEL      Set reasoning effort (default: high)
 
 Claude shortcuts:
   --opus              Claude Opus (default)
@@ -110,6 +111,7 @@ prepare_read_only_context() {
 
 model="opus"
 model_option=""
+effort="high"
 pr_url=""
 push=true
 
@@ -137,6 +139,12 @@ while (($#)); do
       ;;
     --luna)
       select_model "gpt-5.6-luna" "$1"
+      ;;
+    --effort)
+      shift
+      (($#)) || fail "--effort requires a level"
+      [[ "$1" != -* ]] || fail "--effort requires a level"
+      effort="$1"
       ;;
     --no-push|--no-post)
       push=false
@@ -176,11 +184,13 @@ case "$model" in
     if [[ "$push" == true ]]; then
       claude -p "/code-review $skill_arguments" \
         --model "$model" \
+        --effort "$effort" \
         --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
         --output-format text
     else
       claude -p "/code-review $skill_arguments" \
         --model "$model" \
+        --effort "$effort" \
         --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
         --permission-mode dontAsk \
         --add-dir "$review_context_directory" \
@@ -194,6 +204,7 @@ case "$model" in
     if [[ "$push" == true ]]; then
       codex exec \
         --model "$model" \
+        --config "model_reasoning_effort=\"$effort\"" \
         --sandbox workspace-write \
         --config sandbox_workspace_write.network_access=true \
         --ephemeral \
@@ -201,6 +212,7 @@ case "$model" in
     else
       codex exec \
         --model "$model" \
+        --config "model_reasoning_effort=\"$effort\"" \
         --sandbox read-only \
         --config approval_policy=never \
         --ignore-user-config \
