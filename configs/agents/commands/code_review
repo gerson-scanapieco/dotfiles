@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  code_review PR_URL [--model NAME|MODEL_SHORTCUT] [--no-push|--no-post]
+  code_review PR_URL [MODEL_OPTION] [--no-push|--no-post]
   code_review help
 
 Runs the code-review skill against a GitHub pull request in headless mode.
@@ -14,13 +14,18 @@ GitHub by default. Use --no-push or --no-post to print without publishing.
 Run the command from a checkout of the repository that owns the pull request.
 
 Model selection:
-  --model NAME        Select a Claude alias or GPT model by name
+  --model NAME        Select a Claude alias or full GPT model ID
 
 Claude shortcuts:
   --opus              Claude Opus (default)
   --sonnet            Claude Sonnet
 
-Codex models detected from the installed CLI:
+Codex shortcuts:
+  --sol               gpt-5.6-sol
+  --terra             gpt-5.6-terra
+  --luna              gpt-5.6-luna
+
+Codex models accepted by --model (detected from the installed CLI):
 EOF
 
   print_codex_models
@@ -38,7 +43,7 @@ print_codex_models() {
   fi
 
   while IFS= read -r codex_model; do
-    printf '  --%-18s Codex\n' "$codex_model"
+    printf '  %s\n' "$codex_model"
   done <<< "$models"
 }
 
@@ -124,8 +129,14 @@ while (($#)); do
     --sonnet)
       select_model "sonnet" "$1"
       ;;
-    --gpt-*)
-      select_model "${1#--}" "$1"
+    --sol)
+      select_model "gpt-5.6-sol" "$1"
+      ;;
+    --terra)
+      select_model "gpt-5.6-terra" "$1"
+      ;;
+    --luna)
+      select_model "gpt-5.6-luna" "$1"
       ;;
     --no-push|--no-post)
       push=false
