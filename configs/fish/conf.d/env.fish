@@ -13,4 +13,5 @@ if command -q asdf
 end
 
 # Path additions
+fish_add_path ~/.local/bin
 fish_add_path /usr/local/sbin

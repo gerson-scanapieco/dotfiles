@@ -31,7 +31,20 @@ link_skill() {
   echo "Linked skill: ${target}"
 }
 
-mkdir -p ~/.agents/skills ~/.claude/skills
+link_command() {
+  local source="$1"
+  local target="$2"
+
+  if [ -e "${target}" ] && [ ! -L "${target}" ]; then
+    echo "Skipping existing non-symlink command: ${target}"
+    return
+  fi
+
+  ln -sfn "${source}" "${target}"
+  echo "Linked command: ${target}"
+}
+
+mkdir -p ~/.agents/skills ~/.claude/skills ~/.local/bin
 
 link_settings "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json
 
@@ -41,4 +54,9 @@ for skill in "${AGENTS_CONFIG_DIR}"/skills/*/; do
 
   link_skill "${skill}" "${HOME}/.agents/skills/${skill_name}"
   link_skill "${skill}" "${HOME}/.claude/skills/${skill_name}"
+done
+
+for command_path in "${AGENTS_CONFIG_DIR}"/commands/*; do
+  [ -f "${command_path}" ] || continue
+  link_command "${command_path}" "${HOME}/.local/bin/$(basename "${command_path}")"
 done

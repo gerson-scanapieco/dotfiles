@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  code_review PR_URL [MODEL_OPTION] [--no-push|--no-post]
+  code_review help
+
+Runs the code-review skill against a GitHub pull request in headless mode.
+Claude models use Claude Code; GPT models use Codex. Reviews are posted to
+GitHub by default. Use --no-push or --no-post to print without publishing.
+Run the command from a checkout of the repository that owns the pull request.
+
+Model selection:
+  --model NAME        Select a Claude alias or full GPT model ID
+
+Claude shortcuts:
+  --opus              Claude Opus (default)
+  --sonnet            Claude Sonnet
+
+Codex shortcuts:
+  --sol               gpt-5.6-sol
+  --terra             gpt-5.6-terra
+  --luna              gpt-5.6-luna
+
+Codex models accepted by --model (detected from the installed CLI):
+EOF
+
+  print_codex_models
+}
+
+print_codex_models() {
+  local models=""
+
+  if command -v codex >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    models="$(codex debug models 2>/dev/null | jq -r '.models[] | select(.visibility == "list") | .slug' 2>/dev/null)" || models=""
+  fi
+
+  if [[ -z "$models" ]]; then
+    models=$'gpt-5.6-sol\ngpt-5.6-terra\ngpt-5.6-luna\ngpt-5.5\ngpt-5.2'
+  fi
+
+  while IFS= read -r codex_model; do
+    printf '  %s\n' "$codex_model"
+  done <<< "$models"
+}
+
+fail() {
+  printf 'code_review: %s\n' "$1" >&2
+  printf 'Try code_review --help for usage.\n' >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
+}
+
+select_model() {
+  [[ -z "$model_option" ]] || fail "model options cannot be combined: $model_option and $2"
+  model="$1"
+  model_option="$2"
+}
+
+verify_repository() {
+  local remote_name
+  local remote_repository
+  local remote_url
+
+  require_command git
+  while IFS= read -r remote_name; do
+    while IFS= read -r remote_url; do
+      case "$remote_url" in
+        git@github.com:*) remote_repository="${remote_url#git@github.com:}" ;;
+        https://github.com/*) remote_repository="${remote_url#https://github.com/}" ;;
+        ssh://git@github.com/*) remote_repository="${remote_url#ssh://git@github.com/}" ;;
+        *) continue ;;
+      esac
+
+      remote_repository="${remote_repository%.git}"
+      [[ "$remote_repository" == "$pr_repository" ]] && return
+    done < <(git remote get-url --all "$remote_name")
+  done < <(git remote)
+
+  fail "no GitHub remote in the current repository matches $pr_repository"
+}
+
+cleanup_context() {
+  rm -f -- "${review_metadata_file:-}" "${review_diff_file:-}" "${review_comments_file:-}"
+}
+
+prepare_read_only_context() {
+  review_metadata_file="$(mktemp -t code-review-metadata.XXXXXX)"
+  review_diff_file="$(mktemp -t code-review-diff.XXXXXX)"
+  review_comments_file="$(mktemp -t code-review-comments.XXXXXX)"
+  review_context_directory="${review_metadata_file%/*}"
+  trap cleanup_context EXIT
+
+  gh pr view "$pr_url" \
+    --json author,baseRefName,body,comments,commits,files,headRefName,isDraft,number,reviews,state,statusCheckRollup,title,url \
+    > "$review_metadata_file"
+  gh pr diff "$pr_url" > "$review_diff_file"
+  gh api --method GET --paginate --slurp \
+    "repos/$pr_repository/pulls/$pr_number/comments" \
+    > "$review_comments_file"
+
+  skill_arguments+=" Use the pre-fetched GitHub data instead of running gh. Metadata: $review_metadata_file. Diff: $review_diff_file. Inline review comments: $review_comments_file. Do not publish or perform external writes."
+}
+
+model="opus"
+model_option=""
+pr_url=""
+push=true
+
+while (($#)); do
+  case "$1" in
+    --model)
+      shift
+      (($#)) || fail "--model requires a model name"
+      case "$1" in
+        opus|sonnet|gpt-*) select_model "$1" "--model $1" ;;
+        *) fail "unsupported model: $1" ;;
+      esac
+      ;;
+    --opus)
+      select_model "opus" "$1"
+      ;;
+    --sonnet)
+      select_model "sonnet" "$1"
+      ;;
+    --sol)
+      select_model "gpt-5.6-sol" "$1"
+      ;;
+    --terra)
+      select_model "gpt-5.6-terra" "$1"
+      ;;
+    --luna)
+      select_model "gpt-5.6-luna" "$1"
+      ;;
+    --no-push|--no-post)
+      push=false
+      ;;
+    help|-h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      fail "unknown option: $1"
+      ;;
+    *)
+      [[ -z "$pr_url" ]] || fail "only one PR URL may be provided"
+      pr_url="$1"
+      ;;
+  esac
+  shift
+done
+
+[[ -n "$pr_url" ]] || fail "a PR URL is required"
+[[ "$pr_url" =~ ^https://github\.com/([^/]+)/([^/]+)/pull/([0-9]+)/?$ ]] || fail "invalid GitHub PR URL: $pr_url"
+pr_repository="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+pr_number="${BASH_REMATCH[3]}"
+verify_repository
+require_command gh
+
+skill_arguments="$pr_url"
+if [[ "$push" == true ]]; then
+  skill_arguments+=" --post"
+else
+  prepare_read_only_context
+fi
+
+case "$model" in
+  opus|sonnet)
+    require_command claude
+    if [[ "$push" == true ]]; then
+      claude -p "/code-review $skill_arguments" \
+        --model "$model" \
+        --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
+        --output-format text
+    else
+      claude -p "/code-review $skill_arguments" \
+        --model "$model" \
+        --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
+        --permission-mode dontAsk \
+        --add-dir "$review_context_directory" \
+        --strict-mcp-config \
+        --mcp-config '{"mcpServers":{}}' \
+        --output-format text
+    fi
+    ;;
+  gpt-*)
+    require_command codex
+    if [[ "$push" == true ]]; then
+      codex exec \
+        --model "$model" \
+        --sandbox workspace-write \
+        --config sandbox_workspace_write.network_access=true \
+        --ephemeral \
+        "\$code-review $skill_arguments"
+    else
+      codex exec \
+        --model "$model" \
+        --sandbox read-only \
+        --config approval_policy=never \
+        --ignore-user-config \
+        --ephemeral \
+        "\$code-review $skill_arguments"
+    fi
+    ;;
+esac
