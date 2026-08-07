@@ -5,12 +5,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  code_review PR_URL [--model NAME|MODEL_SHORTCUT] [--no-push]
+  code_review PR_URL [--model NAME|MODEL_SHORTCUT] [--no-push|--no-post]
   code_review help
 
 Runs the code-review skill against a GitHub pull request in headless mode.
 Claude models use Claude Code; GPT models use Codex. Reviews are posted to
-GitHub by default. Use --no-push to print the review without publishing it.
+GitHub by default. Use --no-push or --no-post to print without publishing.
 Run the command from a checkout of the repository that owns the pull request.
 
 Model selection:
@@ -126,7 +126,7 @@ while (($#)); do
     --gpt-*)
       select_model "${1#--}" "$1"
       ;;
-    --no-push)
+    --no-push|--no-post)
       push=false
       ;;
     help|-h|--help)
