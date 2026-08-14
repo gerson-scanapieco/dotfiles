@@ -5,17 +5,18 @@ set -euo pipefail
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
 AGENTS_CONFIG_DIR="${DOTFILES}/configs/agents"
 
-link_settings() {
+link_config_file() {
   local source="$1"
   local target="$2"
+  local name="$3"
 
   if [ -e "${target}" ] && [ ! -L "${target}" ] && ! cmp -s "${source}" "${target}"; then
-    echo "Skipping existing Claude settings: ${target}"
+    echo "Skipping existing ${name}: ${target}"
     return
   fi
 
   ln -sfn "${source}" "${target}"
-  echo "Linked Claude settings: ${target}"
+  echo "Linked ${name}: ${target}"
 }
 
 link_skill() {
@@ -44,9 +45,12 @@ link_command() {
   echo "Linked command: ${target}"
 }
 
-mkdir -p ~/.agents/skills ~/.claude/skills ~/.local/bin
+mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/rules ~/.local/bin
 
-link_settings "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json
+link_config_file "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json "Claude settings"
+link_config_file "${AGENTS_CONFIG_DIR}/codex/config.toml" ~/.codex/config.toml "Codex settings"
+link_config_file "${AGENTS_CONFIG_DIR}/codex/AGENTS.md" ~/.codex/AGENTS.md "Codex instructions"
+link_config_file "${AGENTS_CONFIG_DIR}/codex/rules/default.rules" ~/.codex/rules/default.rules "Codex rules"
 
 for skill in "${AGENTS_CONFIG_DIR}"/skills/*/; do
   skill="${skill%/}"

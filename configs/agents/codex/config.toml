@@ -1,0 +1,75 @@
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+openai_base_url = "https://us.api.openai.com/v1"
+approvals_reviewer = "user"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+writable_roots = [
+    "/Users/gersonscanapieco/src/dscout-wt",
+]
+network_access = false
+
+[marketplaces.claude-plugins-official]
+source_type = "git"
+source = "https://github.com/anthropics/claude-plugins-official.git"
+
+[marketplaces.rwx]
+source_type = "git"
+source = "https://github.com/rwx-cloud/skills.git"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[projects."/Users/gersonscanapieco/src/dscout-wt"]
+trust_level = "trusted"
+
+[projects."/Users/gersonscanapieco/src/private/dotfiles"]
+trust_level = "trusted"
+
+[desktop]
+followUpQueueMode = "queue"
+dock-icon-preference = "codex-system"
+
+[desktop.open-in-target-preferences]
+global = "ghostty"
+
+[desktop.open-in-target-preferences.perPath]
+"/Users/gersonscanapieco/src/dscout-wt/main" = "ghostty"
+
+[features]
+js_repl = false
+experimental_use_rmcp_client = true
+
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+default_tools_approval_mode = "writes"
+
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
+default_tools_approval_mode = "writes"
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+[mcp_servers.dscout]
+url = "https://app.dscout.com/astro/mcp"
