@@ -8,9 +8,9 @@ Usage:
   code_review PR_URL [MODEL_OPTION] [--effort LEVEL] [--no-push|--no-post]
   code_review help
 
-Runs the code-review skill against a GitHub pull request in headless mode.
-Claude models use Claude Code; GPT models use Codex. Reviews are posted to
-GitHub by default. Use --no-push or --no-post to print without publishing.
+Runs the my-review skill against a GitHub pull request in headless mode.
+Claude models use Claude Code; GPT models use Codex. Reviews are printed
+without publishing. --no-push and --no-post remain accepted for compatibility.
 Run the command from a checkout of the repository that owns the pull request.
 
 Model selection:
@@ -113,8 +113,6 @@ model="opus"
 model_option=""
 effort="high"
 pr_url=""
-push=true
-
 while (($#)); do
   case "$1" in
     --model)
@@ -147,7 +145,7 @@ while (($#)); do
       effort="$1"
       ;;
     --no-push|--no-post)
-      push=false
+      :
       ;;
     help|-h|--help)
       usage
@@ -172,52 +170,29 @@ verify_repository
 require_command gh
 
 skill_arguments="$pr_url"
-if [[ "$push" == true ]]; then
-  skill_arguments+=" --post"
-else
-  prepare_read_only_context
-fi
+prepare_read_only_context
 
 case "$model" in
   opus|sonnet)
     require_command claude
-    if [[ "$push" == true ]]; then
-      claude -p "/code-review $skill_arguments" \
-        --model "$model" \
-        --effort "$effort" \
-        --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
-        --output-format text
-    else
-      claude -p "/code-review $skill_arguments" \
-        --model "$model" \
-        --effort "$effort" \
-        --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
-        --permission-mode dontAsk \
-        --add-dir "$review_context_directory" \
-        --strict-mcp-config \
-        --mcp-config '{"mcpServers":{}}' \
-        --output-format text
-    fi
+    claude -p "/my-review $skill_arguments" \
+      --model "$model" \
+      --effort "$effort" \
+      --allowedTools "Agent,Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
+      --permission-mode dontAsk \
+      --add-dir "$review_context_directory" \
+      --strict-mcp-config \
+      --mcp-config '{"mcpServers":{}}' \
+      --output-format text
     ;;
   gpt-*)
     require_command codex
-    if [[ "$push" == true ]]; then
-      codex exec \
-        --model "$model" \
-        --config "model_reasoning_effort=\"$effort\"" \
-        --sandbox workspace-write \
-        --config sandbox_workspace_write.network_access=true \
-        --ephemeral \
-        "\$code-review $skill_arguments"
-    else
-      codex exec \
-        --model "$model" \
-        --config "model_reasoning_effort=\"$effort\"" \
-        --sandbox read-only \
-        --config approval_policy=never \
-        --ignore-user-config \
-        --ephemeral \
-        "\$code-review $skill_arguments"
-    fi
+    codex exec \
+      --model "$model" \
+      --config "model_reasoning_effort=\"$effort\"" \
+      --sandbox read-only \
+      --config approval_policy=never \
+      --ephemeral \
+      "\$my-review $skill_arguments"
     ;;
 esac
