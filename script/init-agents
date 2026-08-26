@@ -19,33 +19,40 @@ link_config_file() {
   echo "Linked ${name}: ${target}"
 }
 
-link_skill() {
+link_managed_entry() {
   local source="$1"
   local target="$2"
+  local name="$3"
 
   if [ -e "${target}" ] && [ ! -L "${target}" ]; then
-    echo "Skipping existing non-symlink skill: ${target}"
+    echo "Skipping existing non-symlink ${name}: ${target}"
     return
   fi
 
   ln -sfn "${source}" "${target}"
-  echo "Linked skill: ${target}"
+  echo "Linked ${name}: ${target}"
 }
 
-link_command() {
+install_codex_agent() {
   local source="$1"
   local target="$2"
 
-  if [ -e "${target}" ] && [ ! -L "${target}" ]; then
-    echo "Skipping existing non-symlink command: ${target}"
+  if [ -L "${target}" ]; then
+    if [ "$(readlink "${target}")" != "${source}" ]; then
+      echo "Skipping existing unmanaged Codex agent symlink: ${target}"
+      return
+    fi
+    unlink "${target}"
+  elif [ -e "${target}" ] && [ ! -f "${target}" ]; then
+    echo "Skipping existing non-file Codex agent: ${target}"
     return
   fi
 
-  ln -sfn "${source}" "${target}"
-  echo "Linked command: ${target}"
+  install -m 0644 "${source}" "${target}"
+  echo "Installed Codex agent: ${target}"
 }
 
-mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/rules ~/.local/bin
+mkdir -p ~/.agents/skills ~/.agents/rules ~/.claude/skills ~/.claude/agents ~/.claude/rules ~/.codex/agents ~/.codex/rules ~/.local/bin
 
 link_config_file "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json "Claude settings"
 link_config_file "${AGENTS_CONFIG_DIR}/codex/config.toml" ~/.codex/config.toml "Codex settings"
@@ -56,11 +63,30 @@ for skill in "${AGENTS_CONFIG_DIR}"/skills/*/; do
   skill="${skill%/}"
   skill_name="$(basename "${skill}")"
 
-  link_skill "${skill}" "${HOME}/.agents/skills/${skill_name}"
-  link_skill "${skill}" "${HOME}/.claude/skills/${skill_name}"
+  link_managed_entry "${skill}" "${HOME}/.agents/skills/${skill_name}" "skill"
+  link_managed_entry "${skill}" "${HOME}/.claude/skills/${skill_name}" "skill"
+done
+
+for agent_path in "${AGENTS_CONFIG_DIR}"/claude/agents/*; do
+  [ -e "${agent_path}" ] || continue
+  agent_name="$(basename "${agent_path}")"
+  link_managed_entry "${agent_path}" "${HOME}/.claude/agents/${agent_name}" "Claude agent"
+done
+
+for agent_path in "${AGENTS_CONFIG_DIR}"/codex/agents/*.toml; do
+  [ -f "${agent_path}" ] || continue
+  agent_name="$(basename "${agent_path}")"
+  install_codex_agent "${agent_path}" "${HOME}/.codex/agents/${agent_name}"
+done
+
+for rule_path in "${AGENTS_CONFIG_DIR}"/rules/*.md; do
+  [ -f "${rule_path}" ] || continue
+  rule_name="$(basename "${rule_path}")"
+  link_managed_entry "${rule_path}" "${HOME}/.agents/rules/${rule_name}" "agent rule"
+  link_managed_entry "${rule_path}" "${HOME}/.claude/rules/${rule_name}" "Claude rule"
 done
 
 for command_path in "${AGENTS_CONFIG_DIR}"/commands/*; do
   [ -f "${command_path}" ] || continue
-  link_command "${command_path}" "${HOME}/.local/bin/$(basename "${command_path}")"
+  link_managed_entry "${command_path}" "${HOME}/.local/bin/$(basename "${command_path}")" "command"
 done
