@@ -8,6 +8,12 @@ Perform a thorough, high-quality code review. Works on local changes (unstaged/s
 
 This skill is the **orchestrator**. It fans the work out to subagents — parallel research subagents for deep context, then specialized per-lens reviewer subagents (security, architecture, performance, QA, requirements, and a general reviewer for the rest) — and then does the parts that genuinely need the main window: triage, merging and de-duplicating the lens findings, targeted questions, routing each finding to its verifier, the whole-review adversarial passes, the verdict, and pattern capture. The deep per-lens reasoning happens in the lens subagents, and per-finding verification happens in one isolated verifier per finding; the routing and synthesis happen here.
 
+## Agent Dispatch
+
+Every named research, reviewer, verifier, and adversarial agent in this protocol is a custom-agent role. In Codex, spawn it with `spawn_agent` and set `agent_type` to the exact backticked role name. In Claude Code, use the Agent tool with that role as the subagent type. Start every agent in a parallel wave before waiting for results.
+
+Never look for a skill, shell executable, or MCP tool named after an agent. If a required role is unavailable, return an error naming that role; do not perform its delegated work in the orchestrator or omit that review layer.
+
 ## Getting Started
 
 Determine what to review:

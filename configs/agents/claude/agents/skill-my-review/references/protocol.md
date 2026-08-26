@@ -8,6 +8,8 @@ Read the retained `protocol.md` as the flow source of truth. Load its routing an
 
 ## Mechanical orchestration contract
 
+Every named research, reviewer, verifier, and adversarial agent is a custom-agent role. In Codex, spawn it with `spawn_agent` and set `agent_type` to the exact role name. In Claude Code, use the Agent tool with that role as the subagent type. Start every agent in a parallel wave before waiting for results. Never interpret an agent name as a skill, executable, or MCP tool, and never substitute delegated work in the orchestrator when a required role is unavailable.
+
 1. Normalize the input mode and build the diff source of truth exactly as the shared protocol requires.
 2. Dispatch research and active lens reviewers, then merge and dedupe only their flat findings.
 3. Run one bounded whole-diff synthesis pass after lens compilation. It may emit

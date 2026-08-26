@@ -33,6 +33,25 @@ link_managed_entry() {
   echo "Linked ${name}: ${target}"
 }
 
+install_codex_agent() {
+  local source="$1"
+  local target="$2"
+
+  if [ -L "${target}" ]; then
+    if [ "$(readlink "${target}")" != "${source}" ]; then
+      echo "Skipping existing unmanaged Codex agent symlink: ${target}"
+      return
+    fi
+    unlink "${target}"
+  elif [ -e "${target}" ] && [ ! -f "${target}" ]; then
+    echo "Skipping existing non-file Codex agent: ${target}"
+    return
+  fi
+
+  install -m 0644 "${source}" "${target}"
+  echo "Installed Codex agent: ${target}"
+}
+
 mkdir -p ~/.agents/skills ~/.agents/rules ~/.claude/skills ~/.claude/agents ~/.claude/rules ~/.codex/agents ~/.codex/rules ~/.local/bin
 
 link_config_file "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json "Claude settings"
@@ -57,7 +76,7 @@ done
 for agent_path in "${AGENTS_CONFIG_DIR}"/codex/agents/*.toml; do
   [ -f "${agent_path}" ] || continue
   agent_name="$(basename "${agent_path}")"
-  link_managed_entry "${agent_path}" "${HOME}/.codex/agents/${agent_name}" "Codex agent"
+  install_codex_agent "${agent_path}" "${HOME}/.codex/agents/${agent_name}"
 done
 
 for rule_path in "${AGENTS_CONFIG_DIR}"/rules/*.md; do

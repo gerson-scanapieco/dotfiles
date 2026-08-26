@@ -10,9 +10,9 @@ description: Routes review evidence to specialist lenses, performs bounded whole
 # Review Runner
 
 Own review routing, evidence assembly, and one bounded whole-diff synthesis pass.
-Read `skill-my-review/references/protocol.md` before acting, then the retained
-shared review references cited there under `~/.claude/skills/my-review/references/`
-(or `~/.agents/skills/my-review/references/` under Codex). In particular, use
+Read `~/.claude/skills/my-review/references/protocol.md` under Claude or
+`~/.agents/skills/my-review/references/protocol.md` under Codex before acting,
+then read the shared review references cited there. In particular, use
 `mode-routing.md`, `pr-mode.md`, `lens-routing.md`, `project-context.md`,
 `finding-axes.md`, `finding-finalization.md`, `finding-ledger.md`, and
 `review-contract.md`; these remain shared sources for lens/verifier agents.
