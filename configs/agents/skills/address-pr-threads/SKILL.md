@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # Address PR Threads
 
-Treat each unresolved GitHub review thread and each distinct substantive remark in a top-level review comment as an independent assessment unit. Related items may share an action only after each has been assessed and challenged separately. The user's approval separates assessment from every mutating action.
+Act as the supervisor for the review. Inventory the feedback, prepare evidence for isolated analysts and challengers, manage their debate, and present the conclusions for approval. Do not substitute the supervisor's own opinion for delegated analysis. Related items may share an action only after each has reached a conclusion separately. The user's approval separates assessment from every mutating action.
 
-## 1. Discover and assess
+## 1. Discover and triage
 
 1. Identify the checked-out branch and its open pull request. Stop if the repository is in detached HEAD state or the branch has no open pull request.
 2. Inspect the working tree and record pre-existing changes. Preserve them throughout the task.
@@ -17,39 +17,36 @@ Treat each unresolved GitHub review thread and each distinct substantive remark 
    - For each unresolved inline thread, collect its thread ID, a comment URL, file and current or original line, resolution and outdated state, diff context, and complete conversation.
    - For each review with a non-empty body, collect its review ID, URL, author, state, submission time, and complete body. Split a review body into separate feedback items when it contains independent remarks. Do not assume a review-body remark is addressed merely because the review is old, dismissed, approved, or followed by another review; verify it against subsequent commits and conversation.
    - If there are neither unresolved inline threads nor substantive review-body remarks, report that and stop.
-4. Read every applicable `AGENTS.md` and `CLAUDE.md`, plus enough surrounding code, tests, callers, types, blame, and history to verify each remark rather than accepting it at face value.
-5. For each feedback item, state the reviewer's claim, the concrete failure mode, and the requested outcome. Determine whether the issue was introduced by the pull request, already existed, or cannot be attributed confidently.
-6. Give every item a provisional classification:
-   - `valid`: a code or documentation change is needed.
-   - `already addressed`: the current branch already satisfies the remark.
-   - `incorrect`: the remark's premise or proposed solution does not hold.
-   - `scope creep`: the suggestion may be reasonable, but it is not required by the pull request, linked issue, acceptance criteria, or repository rules, and is not necessary to make the introduced change correct, secure, or compatible.
-   - `question`: a reply can settle the topic without a change.
-   - `blocked`: available evidence is insufficient to decide.
-7. Assign a priority and confidence:
-   - Priority is `critical`, `high`, `medium`, or `low` for actionable items and `none` when no change is warranted. Base it on concrete impact and urgency, not reviewer wording.
-   - Confidence is `high`, `medium`, or `low`. Base it on the strength and completeness of repository and scope evidence, not agreement alone.
+4. Read every applicable `AGENTS.md` and `CLAUDE.md`, plus enough surrounding code, tests, callers, types, blame, and history to prepare a complete evidence packet for each item.
+5. Mark an item `already addressed` only when direct current-branch evidence clearly satisfies it. Record that evidence with priority `none`, confidence `high`, and adversarial verdict `not applicable`. Treat every uncertain item as unaddressed and delegate it rather than resolving the uncertainty during triage.
+6. Give every item a stable label. For every unaddressed item, prepare an evidence packet containing its original feedback and conversation, diff context, pull request and issue scope, repository instructions, and relevant code and history. Keep raw evidence separate from later analysis.
 
-The provisional assessment is complete only when every original feedback item appears exactly once and its classification, priority, and confidence cite concrete repository and scope evidence.
+Triage is complete only when every original feedback item appears exactly once as clearly addressed or unaddressed and every unaddressed item has a complete evidence packet.
 
-## 2. Challenge and adjudicate
+## 2. Analyze and challenge
 
-1. Dispatch a distinct, isolated adversarial reviewer subagent for every original feedback item. Do not batch multiple items into one challenger. Parallel execution is allowed. Challengers are read-only and must not edit files, publish replies, resolve threads, create commits, or push.
-2. Give each challenger the original feedback and conversation, diff context, relevant pull request and issue scope, repository instructions, and the code and history needed for independent verification. Do not reveal the primary assessor's classification, rationale, priority, confidence, or proposed action until the challenger returns its initial assessment.
-3. Require the challenger to return:
-   - Its independent classification, priority, and confidence using the same vocabulary as the primary assessment.
-   - A scope verdict of `in scope`, `required safeguard`, `scope creep`, or `unclear`.
-   - The strongest evidence for and against the feedback, including hidden assumptions, pre-existing behavior, duplicate or overlapping feedback, and plausible regressions from the proposed remedy.
-   - Whether any suggested remedy is necessary and proportionate, and the smallest safe action.
-4. Compare the independent assessments. When they differ materially on classification, scope, priority, or action, or either has low confidence, run one evidence-based debate round: show both assessments to the challenger, have it attack the primary conclusion, then let the primary rebut, inspect any newly identified evidence, and adjudicate.
-5. Record one adversarial verdict per item:
-   - `confirmed`: the independent assessments materially agree.
-   - `confirmed after debate`: a disagreement is resolved in favor of the primary assessment.
-   - `revised`: the primary assessment changes after challenge.
-   - `disputed`: material disagreement remains; classify the item as `blocked` rather than forcing consensus.
-6. After adjudication, group items only when they have the same root cause, final classification, proposed action, and validation. Retain every original label, GitHub link, and adversarial result. Never group items merely because they affect the same file or reviewer.
+1. Confirm that isolated subagent delegation is available. If not, mark unaddressed items `blocked` and stop before requesting approval; never simulate analysis or challenge in the supervisor's context.
+2. For every unaddressed item, spawn a distinct, isolated analyst subagent with no inherited conversation context. Do not batch items. Analysts are read-only and must not edit files, publish replies, resolve threads, create commits, or push.
+3. Give the analyst only the item's evidence packet and require:
+   - The reviewer's claim, concrete failure mode, and requested outcome.
+   - A classification of `valid`, `already addressed`, `incorrect`, `scope creep`, `question`, or `blocked`. Use `scope creep` only when the suggestion is not required by the pull request, linked issue, acceptance criteria, or repository rules and is not necessary to make the introduced change correct, secure, or compatible.
+   - A priority of `critical`, `high`, `medium`, or `low` for actionable items and `none` when no change is warranted, based on concrete impact and urgency rather than reviewer wording.
+   - A confidence of `high`, `medium`, or `low`, based on evidence strength rather than agreement.
+   - A scope verdict of `in scope`, `required safeguard`, `scope creep`, or `unclear`, with evidence for and against the conclusion.
+   - The smallest safe change or reply, planned validation, and any overlap with other feedback.
+4. For every completed analysis, spawn a different isolated challenger subagent. Challengers have the same read-only restrictions as analysts and must not inherit the analyst's or supervisor's context.
+5. Use staged disclosure to limit anchoring:
+   - First give the challenger only the raw evidence packet. Require it to inspect the evidence independently and record a blind classification, priority, confidence, scope verdict, and strongest counter-case.
+   - Store that baseline, then reveal the analyst's complete analysis. Require the challenger to try to falsify it point by point, testing its assumptions, causal path, attribution to the pull request, scope, severity, evidence, proposed action, and regression risk. The challenger may revise its baseline when the evidence warrants it; it must not defend a position merely for disagreement's sake.
+6. Relay the challenge to the analyst, require an evidence-based response or revision, then return that response to the challenger. Continue for at most two challenge-response rounds. A conclusion is either agreement or a clearly recorded unresolved dispute; never force consensus.
+7. Record one adversarial verdict:
+   - `upheld`: the challenger accepts the analysis without a material change.
+   - `revised`: the analysis changes materially and both agents accept the revised conclusion.
+   - `overturned`: the original conclusion is withdrawn and both agents accept its replacement.
+   - `disputed`: a material objection remains after the debate limit; classify the item as `blocked` with low confidence.
+8. The supervisor records the agreed conclusion or dispute without silently choosing a winner. Group items only when they have the same root cause, final classification, proposed action, and validation. Retain every original label, GitHub link, and adversarial result.
 
-Adjudication is complete only when every original feedback item has a primary assessment, an independent challenger assessment, a final decision, and an adversarial verdict.
+This phase is complete only when every unaddressed item has a separate analyst, a separate challenger with a stored blind baseline, a bounded debate record, and a final adversarial verdict.
 
 ## 3. Request approval
 
@@ -61,12 +58,13 @@ Present a compact table with one row per feedback item or coherent action group 
 - Priority
 - Confidence
 - Adversarial verdict
+- Concise challenge summary
 - Concise evidence-based rationale
 - Proposed change or reply
 - Planned validation
 - Proposed commit title when a change is needed
 
-Call out pre-existing working-tree changes, dependencies and action groups, scope-creep conclusions, and blocked or disputed items. Ask the user to approve all or specific labels or action groups, then end the turn.
+Use `not applicable` as the adversarial verdict for items triaged as already addressed. Show expanded analyst and challenger arguments only for `revised`, `overturned`, or `disputed` items. Call out pre-existing working-tree changes, dependencies and action groups, scope-creep conclusions, and blocked or disputed items. Ask the user to approve all or specific labels or action groups, then end the turn.
 
 Sort the table by priority, highest first, while preserving stable labels so the user can act on the most important feedback quickly.
 
@@ -74,7 +72,7 @@ Do not edit files, create commits, push, reply on GitHub, or resolve threads unt
 
 ## 4. Address the approved feedback
 
-1. Re-fetch the pull request, approved threads, and approved reviews. If their content, state, or relevant scope changed materially, reassess and re-challenge the affected items, then present the delta and request approval again.
+1. Re-fetch the pull request, approved threads, and approved reviews. If their content, state, or relevant scope changed materially, re-triage and repeat delegated analysis and challenge for the affected items, then present the delta and request approval again.
 2. Ensure pre-existing user changes cannot enter the planned commits. If they overlap the required edits or prevent clean thread-scoped commits, stop and ask the user how to isolate them.
 3. Handle approved action groups sequentially:
    - For `valid` items, implement the smallest complete fix and add or update tests when they protect the behavior under discussion.
