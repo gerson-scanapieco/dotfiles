@@ -61,8 +61,8 @@ chsh -s "${fish_path}"
 # Symlink fish config
 mkdir -p ~/.config/fish
 ln -sf ${DOTFILES_CONFIGS_DIR}/fish/config.fish ~/.config/fish/config.fish
-ln -sf ${DOTFILES_CONFIGS_DIR}/fish/conf.d ~/.config/fish/conf.d
-ln -sf ${DOTFILES_CONFIGS_DIR}/fish/completions ~/.config/fish/completions
+ln -sfn ${DOTFILES_CONFIGS_DIR}/fish/conf.d ~/.config/fish/conf.d
+ln -sfn ${DOTFILES_CONFIGS_DIR}/fish/completions ~/.config/fish/completions
 
 # Symlink starship config
 ln -sf ${DOTFILES_CONFIGS_DIR}/starship.toml ~/.config/starship.toml
