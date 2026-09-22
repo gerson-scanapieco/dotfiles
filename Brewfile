@@ -1,6 +1,7 @@
 # specify a directory to install
 cask_args appdir: '/Applications'
 
+tap 'anomalyco/tap'
 tap 'manaflow-ai/cmux'
 
 brew 'cmake'
@@ -19,7 +20,7 @@ brew 'zoxide'
 
 brew 'asdf'
 brew 'fish'
-brew 'opencode'
+brew 'anomalyco/tap/opencode-v2'
 brew 'starship'
 
 brew 'yazi'
