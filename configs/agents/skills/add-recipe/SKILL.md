@@ -1,7 +1,7 @@
 ---
 name: add-recipe
 description: Add a recipe to the "Receitas da Semana" Notion database from a YouTube video link or a recipe webpage. Pulls the recipe from the video description/transcript or the page content, then creates a Notion page with the recipe name, source link, ingredients, and steps.
-allowed-tools: ToolSearch(*), WebFetch(*), Bash(curl:*), mcp__claude_ai_Notion__notion-fetch(*), mcp__claude_ai_Notion__notion-query-data-sources(*), mcp__claude_ai_Notion__notion-create-pages(*)
+allowed-tools: ToolSearch(*), WebFetch(*), Bash(yt-dlp:*), Bash(which yt-dlp), mcp__claude_ai_Notion__notion-fetch(*), mcp__claude_ai_Notion__notion-query-data-sources(*), mcp__claude_ai_Notion__notion-create-pages(*)
 argument-hint: [youtube or recipe URL]
 ---
 
@@ -22,6 +22,12 @@ The database is in Brazilian Portuguese. Translate the recipe name and full cont
 If the deferred Notion/WebFetch tools aren't loaded yet, load them first with one `ToolSearch` call:
 `select:mcp__claude_ai_Notion__notion-fetch,mcp__claude_ai_Notion__notion-query-data-sources,mcp__claude_ai_Notion__notion-create-pages,WebFetch`
 
+## Requirement: yt-dlp
+
+`yt-dlp` is a **hard requirement** for this skill — it's the only reliable way to pull a YouTube transcript (YouTube's caption endpoint blocks plain `curl`/HTTP requests with 429s or empty responses, since it requires a signed browser-origin token that only something like `yt-dlp` can produce).
+
+Before doing anything else, run `which yt-dlp`. If it's not found, stop immediately and tell the user it needs to be installed first — point them at `https://github.com/yt-dlp/yt-dlp/wiki/Installation` (on macOS, `brew install yt-dlp` is the fastest path). Don't attempt any URL classification or extraction until it's confirmed installed.
+
 ## Input
 
 $ARGUMENTS should be a URL. If it's empty or not a URL, ask the user for the recipe link and stop.
@@ -33,10 +39,13 @@ $ARGUMENTS should be a URL. If it's empty or not a URL, ask the user for the rec
 2. **Extract the recipe.**
    - **YouTube:**
      a. `WebFetch` the video URL with a prompt asking for: video title, channel name, and the **full** video description verbatim (cooking channels usually put the whole recipe — ingredients and steps — in the description).
-     b. If the description contains a usable recipe (ingredient list and/or steps), use it.
-     c. If the description is thin (e.g. just hashtags/links), try the transcript as a fallback: extract the video ID and fetch the caption track directly, e.g.
-        `curl -s "https://video.google.com/timedtext?lang=en&v=<VIDEO_ID>"` (try `lang=en`, then the video's apparent spoken language, then `kind=asr` variants if the plain call returns empty). Strip the XML tags to get plain spoken text, then derive an ingredient list and steps from it — the transcript is spoken language, not a formatted recipe, so tidy it into clear ingredients/steps yourself.
-     d. If neither yields enough to reconstruct a real recipe, tell the user what's missing and ask them to paste the recipe or point to another source — don't fabricate quantities or steps.
+     b. If the description contains a usable recipe (ingredient list and/or steps), use it — no need for the transcript in that case.
+     c. Otherwise (description is thin — just hashtags/links — or missing key parts like the steps), get the transcript via `yt-dlp`, the main method for this — it's the only one that reliably works:
+        ```
+        yt-dlp --skip-download --write-auto-sub --sub-lang pt --sub-format vtt -o "<scratchpad>/transcript.%(ext)s" "<video URL>"
+        ```
+        Try `--sub-lang pt`, then `en`, then whatever language the video actually appears to be in, if the first attempt errors. Read the resulting `.vtt` file, strip timestamps/cue markup to get plain spoken text, then derive an ingredient list and steps from it — the transcript is spoken language, not a formatted recipe, so tidy it into clear ingredients/steps yourself. Clean up the downloaded `.vtt` file from the scratchpad once you're done with it.
+     d. If yt-dlp fails (e.g. rate-limited with HTTP 429 — this can happen if the same video was hit repeatedly moments before) or the video has no captions at all, tell the user what's missing and ask them to paste the recipe, retry later, or point to another source — don't fabricate quantities or steps.
    - **Webpage:** `WebFetch` the URL with a prompt asking for the recipe title, servings/time if present, full ingredient list, and full numbered instructions. Recipe sites often bury this in a "jump to recipe" block — ask WebFetch specifically for that block's content, not the surrounding blog story.
 
 3. **Check for duplicates.** Query the data source for an existing row with the same `URL` or a very similar `Nome` before creating anything:
