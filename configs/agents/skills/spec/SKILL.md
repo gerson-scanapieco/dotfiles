@@ -29,11 +29,13 @@ Your output is a set of well-structured Linear issues with sub-tasks and depende
 
 1. If given a Linear issue ID: read the issue, its project, parent/children, labels, and all comments
 2. If given free text: parse the intent and identify the domain area
-3. Ask 2-5 clarifying questions about:
+3. Ask as many clarifying questions as needed to get the scope clarified, ordered from most to least important. Draw from:
    - Scope boundaries (what's in, what's out)
    - User-facing behavior and acceptance criteria
    - Technical constraints or preferences
    - Priority and urgency
+
+   If your harness provides a structured question tool (e.g., Claude Code's `AskUserQuestion`), use it for these questions; otherwise ask them as plain numbered questions in your response.
 4. Restate the problem clearly and wait for the developer to confirm your understanding
 
 ## Phase 2: Codebase Research
