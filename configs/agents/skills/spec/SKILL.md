@@ -33,6 +33,7 @@ Your output is a set of well-structured Linear issues with sub-tasks and depende
    - Scope boundaries (what's in, what's out)
    - User-facing behavior and acceptance criteria
    - Technical constraints or preferences
+   - Backwards compatibility, data migration, and rollout concerns
    - Priority and urgency
 
    If your harness provides a structured question tool (e.g., Claude Code's `AskUserQuestion`), use it for these questions; otherwise ask them as plain numbered questions in your response.
