@@ -136,7 +136,7 @@ Wait for the developer to review. Make adjustments based on their feedback. Iter
 4. Set dependency relationships:
    - Use `blockedBy` and `blocks` fields on `save_issue` to map dependencies
    - Dependencies must form a valid DAG (no circular dependencies)
-5. Present a summary of everything created with issue identifiers
+5. Present a summary of everything created with issue identifiers, and point the developer to the `plan` skill for turning any of these issues into a detailed implementation plan before `execute` implements them
 
 ## Constraints
 
