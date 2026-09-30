@@ -47,7 +47,7 @@ link_command() {
 
 mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/rules ~/.config/opencode ~/.local/bin
 
-link_config_file "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json "Claude settings"
+link_config_file "${AGENTS_CONFIG_DIR}/claude/settings.json" ~/.claude/settings.json "Claude settings"
 link_config_file "${AGENTS_CONFIG_DIR}/codex/config.toml" ~/.codex/config.toml "Codex settings"
 link_config_file "${AGENTS_CONFIG_DIR}/codex/rules/default.rules" ~/.codex/rules/default.rules "Codex rules"
 
