@@ -45,12 +45,15 @@ link_command() {
   echo "Linked command: ${target}"
 }
 
-mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/rules ~/.local/bin
+mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/rules ~/.config/opencode ~/.local/bin
 
 link_config_file "${AGENTS_CONFIG_DIR}/claude_settings.json" ~/.claude/settings.json "Claude settings"
 link_config_file "${AGENTS_CONFIG_DIR}/codex/config.toml" ~/.codex/config.toml "Codex settings"
-link_config_file "${AGENTS_CONFIG_DIR}/codex/AGENTS.md" ~/.codex/AGENTS.md "Codex instructions"
 link_config_file "${AGENTS_CONFIG_DIR}/codex/rules/default.rules" ~/.codex/rules/default.rules "Codex rules"
+
+link_config_file "${AGENTS_CONFIG_DIR}/AGENTS.md" ~/.codex/AGENTS.md "Codex instructions"
+link_config_file "${AGENTS_CONFIG_DIR}/AGENTS.md" ~/.config/opencode/AGENTS.md "opencode instructions"
+link_config_file "${AGENTS_CONFIG_DIR}/AGENTS.md" ~/.claude/CLAUDE.md "Claude instructions"
 
 for skill in "${AGENTS_CONFIG_DIR}"/skills/*/; do
   skill="${skill%/}"
