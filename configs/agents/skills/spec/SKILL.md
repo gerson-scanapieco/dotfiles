@@ -41,6 +41,8 @@ Your output is a set of well-structured Linear issues with sub-tasks and depende
 
 ## Phase 2: Codebase Research
 
+If your harness supports delegating read-only research to a subagent, use it for this phase to keep the main context focused on scoping and drafting.
+
 1. Investigate the relevant parts of the codebase to understand the current state:
    - Identify the modules, files, and patterns related to the problem domain
    - Look for existing abstractions, utilities, or conventions that should be reused or followed
