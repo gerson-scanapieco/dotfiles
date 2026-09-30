@@ -9,6 +9,7 @@ brew 'coreutils'
 
 brew 'bat'
 brew 'direnv'
+brew 'eza'
 brew 'fd'
 brew 'fzf'
 brew 'gh'
