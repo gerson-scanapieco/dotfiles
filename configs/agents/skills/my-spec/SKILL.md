@@ -1,6 +1,6 @@
 ---
 name: my-spec
-description: Define and organize work scope from a vague problem description or rough Linear issue. Researches the codebase, asks clarifying questions, drafts well-scoped Linear issues with sub-tasks and dependencies, and creates them after developer approval. Use when starting new work that needs scoping.
+description: Define and organize work scope from a vague problem description or rough Linear issue. Researches the codebase, asks clarifying questions, drafts well-scoped Linear issues with implementation checklists (sub-tasks only when work is independently shippable), and creates them after developer approval. Use when starting new work that needs scoping.
 allowed-tools: tidewave(*), linear-server(*), notion(*), Bash(git:*), Glob(*), Grep(*), Read(*)
 argument-hint: [problem description or Linear issue ID]
 ---
@@ -13,7 +13,7 @@ Your input is either:
 - A free-text problem description (e.g., "add bookmarks for story moments")
 - A Linear issue ID that has a rough description needing refinement (e.g., "FAB-42")
 
-Your output is a set of well-structured Linear issues with sub-tasks and dependency mappings, created only after the developer reviews and approves your draft.
+Your output is a set of well-structured Linear issues, each carrying an implementation checklist, created only after the developer reviews and approves your draft. Sub-tasks and dependency mappings are the exception, used only when the work genuinely needs them.
 
 **You do NOT implement anything.** You define and organize work. Your output — well-structured Linear issues — can then be tackled by the developer in whatever way they choose.
 
@@ -22,8 +22,8 @@ Your output is a set of well-structured Linear issues with sub-tasks and depende
 - **BE COLLABORATIVE**: Ask clarifying questions. Don't assume scope or requirements.
 - **PRESENT BEFORE CREATING**: Always show your complete draft to the developer before creating anything in Linear. Wait for explicit approval.
 - **INVESTIGATE THE CODEBASE**: Research relevant code to inform your "Implementation Guidelines" notes. These should be broad directional guidance, not detailed implementation plans.
-- **KEEP SUB-TASKS SMALL**: Each sub-task should be implementable in a single focused session.
-- **MAP DEPENDENCIES**: Sub-tasks that depend on each other must have those dependencies explicitly set in Linear.
+- **PREFER ONE ISSUE WITH A CHECKLIST**: Implementation steps belong in a checklist inside the issue's Implementation Guidance, not in separate sub-tasks. Split into sub-tasks only per "When to Use Sub-Tasks".
+- **MAP DEPENDENCIES**: When you do create sub-tasks or multiple issues, dependencies between them must be explicitly set in Linear.
 
 ## Phase 1: Intake and Understanding
 
@@ -59,23 +59,33 @@ If your harness supports delegating read-only research to a subagent, use it for
 
 Based on your understanding and codebase research, recommend one of:
 
-### Simple (single issue, no sub-tasks)
+### Simple (single issue, no checklist)
 - Small, self-contained change
 - Can be implemented in one session
 - All context fits in a single issue description
 
-### Medium (single issue + 2-5 sub-tasks)
+### Medium (single issue with an implementation checklist)
 - Multiple related changes that build on each other
-- Each sub-task is a logical step toward the parent issue's goal
-- Sub-tasks have clear dependencies
+- Delivered as one issue (typically one PR) with an implementation checklist in its Implementation Guidance
+- Steps are ordered, coarse-grained units of work, not separate tickets
 
 ### Large (Linear project + multiple issues)
 - Significant feature or initiative with a clear outcome
 - Requires a project description with goals, scope, and success criteria
-- Multiple issues, each potentially with their own sub-tasks
+- Multiple issues, each with its own implementation checklist (and sub-tasks only per "When to Use Sub-Tasks")
 - Focus on both a well-written project description AND a thorough issue breakdown
 
 Present your recommendation and wait for the developer to approve or adjust.
+
+### When to Use Sub-Tasks
+
+Default to a single issue with a checklist. Create a sub-task only when the piece of work is independently valuable AND at least one of these holds:
+- It ships as its own PR/release (e.g. a migration that must deploy first)
+- It will be owned by a different person or team
+- It can be worked in parallel with the rest
+- It needs its own acceptance criteria and review, not just a "done" tick
+
+Never create a sub-task just because something is a step in the implementation. Layers (data, business logic, UI) are checklist items, not sub-tasks. If in doubt, use a checklist.
 
 ## Phase 4: Issue Drafting
 
@@ -92,6 +102,11 @@ Draft all issues using this template:
 [Broad implementation direction with relevant file paths and patterns found in codebase.
 This is directional guidance, not a detailed implementation plan.]
 
+Work through the checklist below in order. Each step lands in its own commit.
+
+- [ ] **1. Step title.** What this step delivers and the key constraints, in a short paragraph.
+- [ ] **2. Step title.** ...
+
 ## Acceptance Criteria
 - [ ] Criterion 1
 - [ ] Criterion 2
@@ -100,7 +115,9 @@ This is directional guidance, not a detailed implementation plan.]
 [Relevant codebase findings, patterns to follow, risks to watch for]
 ```
 
-For each sub-task, draft:
+The checklist describes the order of work; Acceptance Criteria describe verifiable behavior. Keep them distinct. Each step is a meaningful, commit-sized milestone with a bold title and a short paragraph, not a file edit and not a nested list (no sub-steps). If a step carries real uncertainty, make it a time-boxed spike. Detailed breakdown belongs in `my-plan`.
+
+Only if sub-tasks are justified, for each one draft:
 - A short, descriptive title
 - A summary using the template above (can be abbreviated for small sub-tasks)
 - Which sub-tasks it depends on (blockedBy) and which it unblocks (blocks)
@@ -110,8 +127,8 @@ For projects (large scope), also draft:
 - Project description (goals, scope, success criteria)
 
 **Present the complete draft** including:
-- The issue hierarchy (parent → sub-tasks)
-- The dependency graph between sub-tasks
+- The issue hierarchy (parent → sub-tasks, if any), with the "When to Use Sub-Tasks" criterion that justifies each sub-task
+- The dependency graph between sub-tasks, if any
 - Labels and priority recommendations
 - For projects: the project description
 
@@ -123,17 +140,17 @@ Wait for the developer to review. Make adjustments based on their feedback. Iter
 
 1. If large scope: create the Linear project first via `save_project`
 2. Create the parent issue via `save_issue` with:
-   - Title, description (from draft)
+   - Title, description (from draft, including the implementation checklist)
    - Team assignment
    - Labels and priority
    - Project assignment (if applicable)
    - Status: "Backlog" or "Todo" as appropriate
-3. Create sub-tasks via `save_issue` with:
+3. Only if the approved draft includes sub-tasks, create them via `save_issue` with:
    - `parentId` pointing to the parent issue
    - Their own title and description
    - Same team, labels
    - Status: "Backlog"
-4. Set dependency relationships:
+4. If there are sub-tasks or multiple issues, set dependency relationships:
    - Use `blockedBy` and `blocks` fields on `save_issue` to map dependencies
    - Dependencies must form a valid DAG (no circular dependencies)
 5. Present a summary of everything created with issue identifiers, and point the developer to the `my-plan` skill for turning any of these issues into a detailed implementation plan before `my-execute` implements them
@@ -143,5 +160,5 @@ Wait for the developer to review. Make adjustments based on their feedback. Iter
 - **Never write code or modify files** (no Write, no Edit)
 - **Never create Linear issues without developer approval**
 - Dependencies must form a valid DAG
-- Sub-tasks must be ordered logically (data layer before business logic, business logic before UI, etc.)
+- Implementation steps (and any sub-tasks) must be ordered logically (data layer before business logic, business logic before UI, etc.)
 - Investigation notes are broad direction, not detailed implementation plans

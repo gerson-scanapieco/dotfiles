@@ -25,6 +25,7 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 - **If a plan comment exists**: implement it step by step, in its order, writing each step's test(s) before that step's code
 - **If no plan comment exists**: start by implementing the unit tests for the feature EXACTLY as specified, then the feature implementation EXACTLY as specified. If there is missing information, describe your assumptions before proceeding
 - **MANDATORY**: Perform small, incremental git commits for each logical unit of work
+- If the issue description has an "Implementation Steps" checklist, tick off each item in the description via `linear-server` as its step is completed
 - **MANDATORY**: Use short, descriptive commit titles and descriptions
 - **OPTIONAL**: Verify that the implementation works as expected by accessing the webpage via the URL described in the Linear ticket. This is required if the Linear issue involves front-end changes
 
