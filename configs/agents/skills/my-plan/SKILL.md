@@ -17,7 +17,7 @@ If your harness doesn't support the `model` frontmatter override above, switch t
 ## Phase 1: Read the Ticket
 
 1. Read the entirety of Linear issue $ARGUMENTS: description, project, labels, attachments, and all comments
-2. Read any parent, sibling, and sub-issues for full context
+2. Read any parent, sibling, and sub-issues for full context. If the description has an implementation checklist (whether under "Implementation Steps" or inside "Implementation Guidance"), it defines the steps of the plan
 3. Analyze any screenshots for tickets with the label "Feature" — they define how the UI must look. Translate what they show into a precise UI spec (layout, spacing, states, copy) in Phase 3, so `my-execute` doesn't need to re-interpret the image itself
 
 ## Phase 2: Deep Codebase Research
@@ -32,7 +32,7 @@ Go deeper than a scoping pass would — this plan replaces the judgment calls `m
 
 ## Phase 3: Draft the Plan
 
-Draft an ordered, step-by-step plan where each step:
+Draft an ordered, step-by-step plan. If the ticket has an implementation checklist, the plan has exactly one step per checklist item, in the same order and with the same numbering. Do not introduce sub-steps: all detail for an item goes inside that item's step. If an item should be split, merged, or reordered, raise it with the developer in Phase 4 instead of restructuring the plan yourself. Each step:
 - Names the exact file(s), function(s), or component(s) to change
 - States what changes and why, specific enough to leave no architectural decision to the implementer
 - Comes with the test(s) to write first for that step (tests precede implementation, matching `my-execute`'s TDD phase)
