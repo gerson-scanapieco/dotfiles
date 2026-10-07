@@ -1,5 +1,5 @@
 ---
-name: execute
+name: my-execute
 allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Bash(mix:*), Bash(gh:*), sequential-thinking(*), Glob(*), Grep(*), Read(*), Write(*), Edit(*)
 description: Read an issue from Linear and implement it exactly as specified. Creates a branch, writes tests first, implements the feature, commits frequently, opens a PR, and updates the Linear issue.
 argument-hint: [Linear issue ID]
@@ -9,7 +9,7 @@ argument-hint: [Linear issue ID]
 
 Read the contents of Linear issue $ARGUMENTS, including attachments. If the issue has any parent or sibling issues, read those as well since they have important context. Perform the implementation described in the ticket EXACTLY as it is specified.
 
-If a comment on the issue contains a detailed implementation plan (e.g. from the `plan` skill), that plan is the primary source of truth for implementation steps and ordering — follow it directly instead of re-deriving an approach. A ticket carrying such a plan needs less architectural judgment to execute, making this a good candidate to run under a cheaper/faster model if your harness lets you pick one per task.
+If a comment on the issue contains a detailed implementation plan (e.g. from the `my-plan` skill), that plan is the primary source of truth for implementation steps and ordering — follow it directly instead of re-deriving an approach. A ticket carrying such a plan needs less architectural judgment to execute, making this a good candidate to run under a cheaper/faster model if your harness lets you pick one per task.
 
 ## Your Comprehensive Task
 
