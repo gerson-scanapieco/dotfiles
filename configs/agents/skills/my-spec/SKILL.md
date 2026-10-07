@@ -1,5 +1,5 @@
 ---
-name: spec
+name: my-spec
 description: Define and organize work scope from a vague problem description or rough Linear issue. Researches the codebase, asks clarifying questions, drafts well-scoped Linear issues with sub-tasks and dependencies, and creates them after developer approval. Use when starting new work that needs scoping.
 allowed-tools: tidewave(*), linear-server(*), notion(*), Bash(git:*), Glob(*), Grep(*), Read(*)
 argument-hint: [problem description or Linear issue ID]
@@ -136,7 +136,7 @@ Wait for the developer to review. Make adjustments based on their feedback. Iter
 4. Set dependency relationships:
    - Use `blockedBy` and `blocks` fields on `save_issue` to map dependencies
    - Dependencies must form a valid DAG (no circular dependencies)
-5. Present a summary of everything created with issue identifiers, and point the developer to the `plan` skill for turning any of these issues into a detailed implementation plan before `execute` implements them
+5. Present a summary of everything created with issue identifiers, and point the developer to the `my-plan` skill for turning any of these issues into a detailed implementation plan before `my-execute` implements them
 
 ## Constraints
 
