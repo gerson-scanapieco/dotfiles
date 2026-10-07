@@ -8,7 +8,7 @@ Usage:
   code_review PR_URL [MODEL_OPTION] [--effort LEVEL] [--no-push|--no-post]
   code_review help
 
-Runs the code-review skill against a GitHub pull request in headless mode.
+Runs the my-review skill against a GitHub pull request in headless mode.
 Claude models use Claude Code; GPT models use Codex. Reviews are posted to
 GitHub by default. Use --no-push or --no-post to print without publishing.
 Run the command from a checkout of the repository that owns the pull request.
@@ -92,9 +92,9 @@ cleanup_context() {
 }
 
 prepare_read_only_context() {
-  review_metadata_file="$(mktemp -t code-review-metadata.XXXXXX)"
-  review_diff_file="$(mktemp -t code-review-diff.XXXXXX)"
-  review_comments_file="$(mktemp -t code-review-comments.XXXXXX)"
+  review_metadata_file="$(mktemp -t my-review-metadata.XXXXXX)"
+  review_diff_file="$(mktemp -t my-review-diff.XXXXXX)"
+  review_comments_file="$(mktemp -t my-review-comments.XXXXXX)"
   review_context_directory="${review_metadata_file%/*}"
   trap cleanup_context EXIT
 
@@ -182,13 +182,13 @@ case "$model" in
   opus|sonnet)
     require_command claude
     if [[ "$push" == true ]]; then
-      claude -p "/code-review $skill_arguments" \
+      claude -p "/my-review $skill_arguments" \
         --model "$model" \
         --effort "$effort" \
         --allowedTools "Bash(git:*),Bash(gh:*),Glob(*),Grep(*),Read(*)" \
         --output-format text
     else
-      claude -p "/code-review $skill_arguments" \
+      claude -p "/my-review $skill_arguments" \
         --model "$model" \
         --effort "$effort" \
         --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git blame:*),Bash(git rev-parse:*),Bash(git merge-base:*),Bash(git ls-files:*),Glob(*),Grep(*),Read(*)" \
@@ -208,7 +208,7 @@ case "$model" in
         --sandbox workspace-write \
         --config sandbox_workspace_write.network_access=true \
         --ephemeral \
-        "\$code-review $skill_arguments"
+        "\$my-review $skill_arguments"
     else
       codex exec \
         --model "$model" \
@@ -217,7 +217,7 @@ case "$model" in
         --config approval_policy=never \
         --ignore-user-config \
         --ephemeral \
-        "\$code-review $skill_arguments"
+        "\$my-review $skill_arguments"
     fi
     ;;
 esac
