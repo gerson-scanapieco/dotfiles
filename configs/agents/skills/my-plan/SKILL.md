@@ -35,7 +35,7 @@ Go deeper than a scoping pass would — this plan replaces the judgment calls `m
 
 The ticket scopes *what* to build; it rarely settles *how* the pieces fit together. Before drafting, surface every load-bearing technical decision and settle it with the developer. Never pick one silently.
 
-1. List the decisions the plan depends on. Draw from:
+1. List the decisions the plan depends on, starting with the ticket's "Open Technical Questions" section if it has one. Draw from:
    - System boundaries and responsibilities (which component or service owns each piece of behavior and data, and how they communicate)
    - Data model and database changes (new tables vs columns, ownership, constraints, migrations, backfills)
    - API and event contracts between services and with the client

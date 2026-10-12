@@ -113,9 +113,13 @@ Work through the checklist below in order. Each step lands in its own commit.
 
 ## Technical Notes
 [Relevant codebase findings, patterns to follow, risks to watch for]
+
+## Open Technical Questions
+[Architectural decisions scoping left unsettled, each with the options you saw.
+Omit this section if there are none.]
 ```
 
-The checklist describes the order of work; Acceptance Criteria describe verifiable behavior. Keep them distinct. Each step is a meaningful, commit-sized milestone with a bold title and a short paragraph, not a file edit and not a nested list (no sub-steps). If a step carries real uncertainty, make it a time-boxed spike. Detailed breakdown belongs in `my-plan`.
+The checklist describes the order of work; Acceptance Criteria describe verifiable behavior. Keep them distinct. Open Technical Questions list the load-bearing technical decisions that scoping didn't settle (system boundaries, data model, contracts, rollout). `my-plan` resolves them with the developer, so don't settle them implicitly through the wording of the guidance or checklist. Anything the developer did decide during scoping belongs in Implementation Guidance or Technical Notes as a settled decision. Each step is a meaningful, commit-sized milestone with a bold title and a short paragraph, not a file edit and not a nested list (no sub-steps). If a step carries real uncertainty, make it a time-boxed spike. Detailed breakdown belongs in `my-plan`.
 
 Only if sub-tasks are justified, for each one draft:
 - A short, descriptive title
@@ -130,6 +134,7 @@ For projects (large scope), also draft:
 - The issue hierarchy (parent → sub-tasks, if any), with the "When to Use Sub-Tasks" criterion that justifies each sub-task
 - The dependency graph between sub-tasks, if any
 - Labels and priority recommendations
+- The open technical questions left for `my-plan`, so the developer can settle any of them now instead
 - For projects: the project description
 
 Wait for the developer to review. Make adjustments based on their feedback. Iterate until they approve.
