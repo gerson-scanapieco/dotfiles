@@ -1,7 +1,6 @@
 ---
 name: address-pr-threads
 description: Assess and address inline review threads and top-level review comments on the current branch's GitHub pull request, with user approval before making changes.
-disable-model-invocation: true
 ---
 
 # Address PR Threads
