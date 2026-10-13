@@ -2,7 +2,7 @@
 
 # Dotfiles vars
 export DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
-export DOTFILES_CONFIGS_DIR="${DOTFILES}/configs"
+export DOTFILES_CONFIGS_DIR="${DOTFILES}/config"
 export RUBY_VERSION="3.4.3"
 export ERLANG_VERSION="28.5"
 export ELIXIR_VERSION="1.19.5-otp-28"
@@ -126,7 +126,7 @@ asdf set -u nodejs ${NODEJS_VERSION}
 ####################################################################
 
 echo "Initializing agent settings, skills, and commands..."
-"${DOTFILES}/script/init-agents"
+"${DOTFILES}/setup/init-agents"
 
 ####################################################################
 # Installing Claude Code plugins

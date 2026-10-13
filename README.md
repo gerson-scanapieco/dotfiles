@@ -11,8 +11,8 @@ Run the setup script:
 
 ```bash
 cd ~/dotfiles
-chmod +x script/setup
-script/setup
+chmod +x setup/setup
+setup/setup
 ```
 
 Done! :D

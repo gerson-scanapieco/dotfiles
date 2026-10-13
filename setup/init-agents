@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
-AGENTS_CONFIG_DIR="${DOTFILES}/configs/agents"
+AGENTS_CONFIG_DIR="${DOTFILES}/agents"
 
 link_config_file() {
   local source="$1"
