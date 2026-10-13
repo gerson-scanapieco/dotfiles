@@ -12,24 +12,24 @@ Input in $ARGUMENTS is an optional pull request URL. Without it, use the open pu
 
 ## Watch loop
 
-Run at most 3 loops. A loop is one monitor window: the monitor runs for at most 30 minutes, and any new feedback it reports is assessed and addressed (sections 1-4) within that loop. A loop ends when its monitor expires, or when its feedback has been handled. After the third loop, stop watching, report, and tell the user to run this skill again to keep watching.
+Run at most 3 loops. A loop is one watch window: the watcher runs for at most 30 minutes, and any new feedback it reports is assessed and addressed (sections 1-4) within that loop. A loop ends when its window expires (`WINDOW_EXPIRED`, or the streaming monitor timing out), or when its feedback has been handled. After the third loop, stop watching, report, and tell the user to run this skill again to keep watching.
 
-1. Start a background monitor running this skill's `scripts/watch-pr` script:
-
-   ```
-   <this skill's directory>/scripts/watch-pr <PR URL> <state file> 300
-   ```
-
-   Use a state file in your scratchpad or temp directory named after the PR number, and reuse the same path for the life of this PR. The script polls every 300 seconds and prints:
+1. Start the watcher: this skill's `scripts/watch-pr` script, run in the background so the session stays interactive. Use a state file in your scratchpad or temp directory named after the PR number, and reuse the same path for the life of this PR; it keeps already-seen feedback from being reported twice. The script polls every 300 seconds and prints:
    - `NEW_FEEDBACK ...` for each new review, inline comment, or conversation comment not authored by the user
    - `POLL_ERROR ...` after 3 consecutive failed polls
    - `PR_MERGED ...` or `PR_CLOSED ...`, then exits
+   - `WINDOW_EXPIRED ...` in `--once` mode when the window ends with nothing to report
 
-   In Claude Code, use the `Monitor` tool with the maximum `timeout_ms`. A monitor expires after at most 30 minutes; when it expires without the PR being merged or closed, that loop is over, so start the next loop with the same command and state file. The state file keeps already-seen feedback from being reported twice. If your harness has no background monitor, tell the user and stop.
+   Pick the first mode your harness supports:
+   - **Streaming monitor** (Claude Code's `Monitor` tool, or opencode v2 with the `opencode-monitor` plugin): run `<this skill's directory>/scripts/watch-pr <PR URL> <state file> 300` with the maximum timeout. Each printed line wakes the agent. A monitor expires after at most 30 minutes; when it expires without the PR being merged or closed, that loop is over, so start the next loop with the same command and state file.
+   - **Background job that announces completion** (opencode v2 shell tool with `background`): run `<this skill's directory>/scripts/watch-pr <PR URL> <state file> 300 --once 1800`. The job exits at the first feedback, error, merge, close, or after 30 minutes, and its completion wakes the agent. Each exit is one loop.
+   - **Background subagent** (Codex with `features.multi_agent` enabled, or any harness with background agents): spawn a subagent whose only task is to run the `--once 1800` command in the foreground and return the printed lines unchanged. Its completion wakes the parent. Each return is one loop.
+   - **None of these**: tell the user the harness cannot wake the agent, and stop. They can re-run this skill later to check the pull request once.
 2. On `NEW_FEEDBACK`, run sections 1-4 below. If more feedback arrives while waiting for approval, tell the user and include the new items when section 3 re-fetches the pull request. When the loop's feedback is handled, start the next loop.
 3. On `POLL_ERROR`, check `gh auth status` and network access, tell the user, and start the next loop once the cause is clear.
-4. On `PR_MERGED`, stop the monitor and report the final state.
-5. On `PR_CLOSED`, stop the monitor and report that the pull request was closed without merging.
+4. On `WINDOW_EXPIRED`, that loop is over; start the next one if fewer than 3 loops have run.
+5. On `PR_MERGED`, stop the watcher and report the final state.
+6. On `PR_CLOSED`, stop the watcher and report that the pull request was closed without merging.
 
 ## 1. Discover and assess
 

@@ -66,6 +66,8 @@ Skills are not namespaced: each ID comes from its directory name, so mention the
 3. Answer the questions `spec` and `plan` ask; each skill stops at its approval gates and never answers them for you.
 4. Review the pull request `gflow` opens. `watch-pr` then monitors it and asks for your approval before changing anything.
 
+`watch-pr` needs a way to be woken when something happens. Claude Code uses its `Monitor` tool; opencode v2 can use a background shell job (or the `opencode-monitor` plugin); Codex needs `features.multi_agent` so a background subagent can do the waiting. Without any of these, `watch-pr` checks once and stops.
+
 Each skill also works on its own, so you can enter the flow at any stage.
 
 ## Examples
