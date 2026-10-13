@@ -27,7 +27,10 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 - **MANDATORY**: Perform small, incremental git commits for each logical unit of work
 - If the issue description has an "Implementation Steps" checklist, tick off each item in the description via `linear-server` as its step is completed
 - **MANDATORY**: Use short, descriptive commit titles and descriptions
-- **OPTIONAL**: Verify that the implementation works as expected by accessing the webpage via the URL described in the Linear ticket. This is required if the Linear issue involves front-end changes
+- **MANDATORY**: Verify that the implementation works as expected by exercising it the way a user would, not only through unit tests. This applies to every change: front-end, CLI, API, background jobs, and refactors that claim to preserve behavior
+  - If the repository has a project-local verification skill (`verify-*` in `.claude/skills/` or `.agents/skills/`), use it: launch the app, drive the affected feature from its feature map, and keep the captured evidence
+  - Otherwise, use the closest real entry point: the webpage at the URL described in the Linear ticket, the CLI command, the API request, or the job trigger
+  - If the change cannot be exercised live (missing credentials, external dependency, no runnable app), say what was and was not verified in the PR description, and suggest the `create-verification-skill` skill when the repository has no way to run its app. Do not generate one as part of this issue
 
 ### Phase 3: Open Pull Request
 
@@ -35,7 +38,7 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 - **MANDATORY**: Determine the PR template: if the issue's Linear label or issue type field marks it as a bug, use the Bugfix template; otherwise use the Feature/Change template
 - **MANDATORY**: Open a draft PR via `gh pr create` targeting `main` with:
   - Title following the template: `<short, descriptive title> [<Linear issue ID>]` (e.g. `Add bookmarks for story moments [FAB-42]`)
-  - Body following the applicable template below
+  - Body following the applicable template below. Fill the verification section from what you actually ran during Phase 2 verification, never from what you expect would work
 
 **Feature/Change template:**
 ```markdown
@@ -49,7 +52,7 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 [Schema changes, if any — omit this section entirely if there are none]
 
 ## How to Test
-[Manual QA steps to verify the change]
+[The steps you actually ran in Phase 2 to verify the change, with the observed result of each. Note anything you could not verify]
 
 ## Deployment Checklist
 [Steps to perform before/while this PR lands in prod: feature flags, config changes, secrets, other infra concerns — omit this section entirely if there are none]
@@ -84,6 +87,8 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 3.
 
 ## How to Verify (After Fix)
+
+<!-- The steps you actually ran in Phase 2, with the observed result of each. Note anything you could not verify. -->
 
 1.
 2.
