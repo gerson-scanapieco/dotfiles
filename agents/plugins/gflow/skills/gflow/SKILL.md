@@ -1,6 +1,6 @@
 ---
 name: gflow
-description: Drive a piece of work end to end — scope it with spec, plan it with plan, implement it with impl, review and fix the branch locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
+description: Drive a piece of work end to end — scope it with spec, plan it with plan, implement it with impl, review the branch with the review skill and fix it locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
 disable-model-invocation: true
 argument-hint: [problem description or Linear issue ID] [--draft]
 ---
@@ -40,17 +40,18 @@ Invoke the `impl` skill with the issue ID, but run only its Phase 1 and Phase 2.
 
 ## Phase 4: Local code review
 
-Review the branch before anyone else sees it. Repeat the following at most 3 rounds, or until a round finds nothing valid:
+Review the branch before anyone else sees it, using the `review` skill. Repeat the following at most 3 rounds, or until a round has no confirmed findings:
 
-1. Determine the base: `git merge-base HEAD origin/<default branch>` (find the default branch with `git symbolic-ref refs/remotes/origin/HEAD`).
-2. Delegate the review to a subagent with fresh context, so it does not inherit the implementer's assumptions. Give it the Linear issue ID, the plan comment, and the diff range `<base>...HEAD`, and ask for findings on correctness, missed requirements or acceptance criteria, missing tests, security, and deviations from the repository's `AGENTS.md`/`CLAUDE.md` and conventions. Each finding must name the file and line, the problem, and a concrete failure scenario.
-3. Verify every finding yourself against the code before acting on it, and classify it as `valid`, `incorrect`, or `needs decision` (a product or design choice, or a change outside the issue's scope).
-4. For each `valid` finding: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes.
-5. Run the repository's full relevant test suite after the round's fixes.
+1. Delegate to a subagent with fresh context, so the review does not inherit the implementer's assumptions. Tell it to invoke the `review` skill with `--no-report --issue <Linear issue ID>` on the current branch, and to return the skill's output unchanged. The review skill runs with its own model and effort settings. If the harness cannot dispatch subagents, invoke the skill directly.
+2. Read the result:
+   - `confirmed` findings are already independently verified by the review, so do not re-derive them. Quickly sanity-check each against the code you just wrote before changing it, and skip with a note any that no longer apply
+   - `needs decision` items are not acted on; they go to the developer
+3. For each confirmed finding: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes. The review ignores uncommitted work, so commit every fix before the next round.
+4. Run the repository's full relevant test suite after the round's fixes.
 
-Do not act on `needs decision` findings. Present them to the developer with the rest of the review summary and wait for their call before Phase 5. If none exist, continue without waiting.
+Present the `needs decision` items to the developer with the rest of the review summary and wait for their call before Phase 5. If none exist, continue without waiting.
 
-Keep a record of each round: findings, classifications, and commit SHAs. It goes into the final report.
+Keep a record of each round: verdict, findings, what was fixed with commit SHAs, and what was skipped and why. It goes into the final report.
 
 ## Phase 5: Open the pull request
 
