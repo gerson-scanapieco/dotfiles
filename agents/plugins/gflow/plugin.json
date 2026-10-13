@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "gflow",
+  "version": "0.1.0",
+  "description": "Gerson's development flow: scope work in Linear, plan it, and execute it.",
+  "author": {
+    "name": "Gerson Scanapieco",
+    "email": "gerson.scanapieco@gmail.com"
+  }
+}
