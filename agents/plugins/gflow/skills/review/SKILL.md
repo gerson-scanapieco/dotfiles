@@ -98,14 +98,7 @@ Deliver according to the mode.
 
 **`--no-report`**: print, as plain text, the verdict, its explanation, and the confirmed findings and `needs decision` items, each with `file:line`, severity, claim, scenario, evidence, and suggested fix, plus the requirements trace and the coverage notes. Write no file and post nothing.
 
-**`--post`**: publish to the pull request. Do not produce the HTML document. With no PR (a local review), say so and stop.
-- Create a single pull request review through the GitHub API (`POST /repos/<owner>/<repo>/pulls/<number>/reviews`), pinned to the reviewed head SHA with `commit_id`, with:
-  - `event`: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`, from the verdict. If GitHub rejects the event because the authenticated user authored the PR, post it as `COMMENT` and say why in the body
-  - `comments`: one inline comment per confirmed finding (and per `needs decision` item that maps to a line) that lands on a line in the PR's diff, each stating the problem, the scenario, and the suggested fix, in the author's terms and without internal verification chatter
-  - `body`: the conclusion: the verdict, its explanation, what changed since the previous review when there is one, and anything that could not be placed inline. A few paragraphs at most
-- Findings that cannot be anchored to a diff line go in the body.
-- Do not resolve existing threads. Mention in the body which earlier items the new commits addressed.
-- Print the review URL and the verdict to the terminal.
+**`--post`**: read `references/publish.md` and follow it to publish the review. Do not produce the HTML document.
 
 ## Constraints
 

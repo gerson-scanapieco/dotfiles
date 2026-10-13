@@ -77,53 +77,17 @@ Based on your understanding and codebase research, recommend one of:
 
 Present your recommendation and wait for the developer to approve or adjust.
 
-### When to Use Sub-Tasks
-
-Default to a single issue with a checklist. Create a sub-task only when the piece of work is independently valuable AND at least one of these holds:
-- It ships as its own PR/release (e.g. a migration that must deploy first)
-- It will be owned by a different person or team
-- It can be worked in parallel with the rest
-- It needs its own acceptance criteria and review, not just a "done" tick
-
-Never create a sub-task just because something is a step in the implementation. Layers (data, business logic, UI) are checklist items, not sub-tasks. If in doubt, use a checklist.
+Default to a single issue with a checklist. Read `references/sub-tasks.md` before deciding that any piece of work should be a sub-task.
 
 ## Phase 4: Issue Drafting
 
-Draft all issues using this template:
-
-```markdown
-## Overview
-[Clear statement of what needs to be done]
-
-## Context
-[Business/technical motivation — why this work matters]
-
-## Implementation Guidance
-[Broad implementation direction with relevant file paths and patterns found in codebase.
-This is directional guidance, not a detailed implementation plan.]
-
-Work through the checklist below in order. Each step lands in its own commit.
-
-- [ ] **1. Step title.** What this step delivers and the key constraints, in a short paragraph.
-- [ ] **2. Step title.** ...
-
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Technical Notes
-[Relevant codebase findings, patterns to follow, risks to watch for]
-
-## Open Technical Questions
-[Architectural decisions scoping left unsettled, each with the options you saw.
-Omit this section if there are none.]
-```
+Draft all issues using the template in `references/issue-template.md`, read it now.
 
 The checklist describes the order of work; Acceptance Criteria describe verifiable behavior. Keep them distinct. Open Technical Questions list the load-bearing technical decisions that scoping didn't settle (system boundaries, data model, contracts, rollout). `plan` resolves them with the developer, so don't settle them implicitly through the wording of the guidance or checklist. Anything the developer did decide during scoping belongs in Implementation Guidance or Technical Notes as a settled decision. Each step is a meaningful, commit-sized milestone with a bold title and a short paragraph, not a file edit and not a nested list (no sub-steps). If a step carries real uncertainty, make it a time-boxed spike. Detailed breakdown belongs in `plan`.
 
 Only if sub-tasks are justified, for each one draft:
 - A short, descriptive title
-- A summary using the template above (can be abbreviated for small sub-tasks)
+- A summary using the issue template (can be abbreviated for small sub-tasks)
 - Which sub-tasks it depends on (blockedBy) and which it unblocks (blocks)
 
 For projects (large scope), also draft:

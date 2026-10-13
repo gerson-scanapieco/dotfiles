@@ -20,11 +20,7 @@ Run at most 3 loops. A loop is one watch window: the watcher runs for at most 30
    - `PR_MERGED ...` or `PR_CLOSED ...`, then exits
    - `WINDOW_EXPIRED ...` in `--once` mode when the window ends with nothing to report
 
-   Pick the first mode your harness supports:
-   - **Streaming monitor** (Claude Code's `Monitor` tool, or opencode v2 with the `opencode-monitor` plugin): run `<this skill's directory>/scripts/watch-pr <PR URL> <state file> 300` with the maximum timeout. Each printed line wakes the agent. A monitor expires after at most 30 minutes; when it expires without the PR being merged or closed, that loop is over, so start the next loop with the same command and state file.
-   - **Background job that announces completion** (opencode v2 shell tool with `background`): run `<this skill's directory>/scripts/watch-pr <PR URL> <state file> 300 --once 1800`. The job exits at the first feedback, error, merge, close, or after 30 minutes, and its completion wakes the agent. Each exit is one loop.
-   - **Background subagent** (Codex with `features.multi_agent` enabled, or any harness with background agents): spawn a subagent whose only task is to run the `--once 1800` command in the foreground and return the printed lines unchanged. Its completion wakes the parent. Each return is one loop.
-   - **None of these**: tell the user the harness cannot wake the agent, and stop. They can re-run this skill later to check the pull request once.
+   Pick the first mode your harness supports and follow `references/harness-modes.md` for the exact command and how each exit counts as a loop. If none is supported, tell the user the harness cannot wake the agent, and stop.
 2. On `NEW_FEEDBACK`, run sections 1-4 below. If more feedback arrives while waiting for approval, tell the user and include the new items when section 3 re-fetches the pull request. When the loop's feedback is handled, start the next loop.
 3. On `POLL_ERROR`, check `gh auth status` and network access, tell the user, and start the next loop once the cause is clear.
 4. On `WINDOW_EXPIRED`, that loop is over; start the next one if fewer than 3 loops have run.
