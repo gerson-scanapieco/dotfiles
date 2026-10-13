@@ -11,6 +11,7 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 | `plan` | Turns a scoped issue into a step-by-step implementation plan, posted as a comment |
 | `impl` | Implements an issue test-first, commits, opens a PR and updates Linear |
 | `watch-pr` | Polls a PR every 5 minutes, assesses new feedback and addresses it after approval (max 3 loops) |
+| `explain` | Explains code, a file or a concept in plain language for a non-technical reader |
 
 ## Install
 
@@ -54,7 +55,7 @@ opencode v2 has no plugin marketplace and its plugins (`plugins` in `opencode.js
 }
 ```
 
-Skills are not namespaced: each ID comes from its directory name, so mention them as `@spec`, `@plan`, `@impl`, `@watch-pr` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
+Skills are not namespaced: each ID comes from its directory name, so mention them as `@spec`, `@plan`, `@impl`, `@watch-pr`, `@explain` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
 
 ## Get started
 
