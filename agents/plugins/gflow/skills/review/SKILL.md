@@ -58,7 +58,7 @@ Before dispatching reviewers, write a brief for them:
 
 ## Phase 2: Parallel specialist review
 
-Dispatch one subagent per lens (six), concurrently, each with fresh context so none inherits another's assumptions. Give each the brief, the diff range, how to read files at the head, the conventions, and the deterministic check results. If the harness cannot dispatch subagents from here (for example when this skill itself already runs inside a subagent), run the lenses yourself one after another with the same discipline, forming each lens's conclusions before reading the next.
+Dispatch one subagent per lens (seven), concurrently, each with fresh context so none inherits another's assumptions. Give each the brief, the diff range, how to read files at the head, the conventions, and the deterministic check results. If the harness cannot dispatch subagents from here (for example when this skill itself already runs inside a subagent), run the lenses yourself one after another with the same discipline, forming each lens's conclusions before reading the next.
 
 Lenses:
 1. **Correctness**: logic errors, edge cases (empty, null, boundary, large, concurrent), error handling and propagation, resource leaks, off-by-one, state and ordering bugs, and behavior that changed for existing callers.
@@ -71,6 +71,20 @@ Lenses:
    - Defaults and validation: a missing or malformed value that fails late or silently instead of at boot, defaults that are unsafe in production, and values that differ by environment
    - Feature flag lifecycle: flags that are checked but never created, and defaults that enable unfinished behavior
    - Rollout: migration, deploy, and flag ordering, backward compatibility during a rolling deploy, and rollback safety
+7. **Code quality**: how the changed code will fare in the hands of the next maintainer, judged at the level of functions, modules, and tests rather than system architecture.
+   - Naming: variables, functions, modules, and classes that are vague, abbreviated, or misleading instead of descriptive of what they hold or do
+   - Simplicity (KISS, YAGNI): hard-to-follow functions, deep nesting, long parameter lists, magic values, flags that change a function's meaning, and machinery that is more elaborate than the problem needs; also speculative generality: abstractions, configuration, parameters, and extension points built for needs nobody has stated
+   - Comments: comments that describe what or how the code does something instead of signaling what is non-obvious, such as the business context or the reason behind a decision; comments that contradict the code. A missing comment is a finding only where a non-obvious decision would mislead the next reader
+   - SOLID: units with more than one reason to change, extension that requires editing existing code, subtypes that break their base contract, wide interfaces that force unused dependencies, and high-level code that depends on concrete details instead of abstractions
+   - Vertical slices: code organized by feature or use case rather than by technical layer, so a change to one behavior stays within one slice; report logic scattered across layers, slices reaching into each other's internals, and shared code that exists for a single slice
+   - Persistence boundary: queries, ORM calls, and storage access spread through application or domain code instead of going through the project's persistence layer (repositories, data-access modules), including query details that leak into callers
+   - Redundancy: dead or unreachable code, unused parameters and exports, duplicated blocks within the change, and abstractions with a single trivial use
+   - Robustness of structure: swallowed errors, loosely typed data where the project uses stronger types, and mutation of shared or input state
+   - Test doubles: monkeypatching, patching of module or global state, and hand-rolled stubs, where the dependency should be injected and replaced with a mock
+   - Test quality: tautological tests that restate the implementation or can only pass; tests coupled to implementation details (private members, call order, internal structure) instead of exercising the system's behavior through its boundaries; and boundary behavior that is left untested
+   - Test readability (DAMP): tests that hide their setup and expectations behind shared helpers, fixtures, loops, or heavy abstraction so a reader cannot see what is arranged and asserted without leaving the test; descriptive and repeated is preferred over DRY in tests
+
+   Report a quality finding only when the scenario names a concrete cost, such as a change a maintainer would plausibly make that the code invites them to get wrong, or a refactor that would break a test while behavior stays correct. Skip anything the project's formatter or linter enforces and anything that is a matter of taste. Where the project's own conventions differ from the above, the project's conventions win.
 
 Each reviewer returns findings only in this shape, and nothing else:
 - `file:line` (the line in the head version)
