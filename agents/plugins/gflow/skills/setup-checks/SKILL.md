@@ -49,9 +49,16 @@ Turn each gap into a proposal and ask for decisions. Group them so the developer
 
 For each missing or partial mechanism, propose:
 - The tool, preferring the ecosystem's de facto standard and what the repository already depends on over introducing a new one
-- The minimal configuration that fits the project's existing conventions
+- The configuration that fits the project's existing conventions, at the strictness level described below
 - What it will flag today (run it in a scratch check, or with its dry-run flag, to count violations)
 - Which tier it belongs to
+
+Strictness is a decision per tool, not an accident of its defaults. Use three levels:
+- **relaxed**: the tool's baseline rules; warnings are reported but do not fail the check
+- **standard** (default): the tool's recommended ruleset, with warnings treated as errors so nothing is silently ignored
+- **strict**: the standard ruleset plus the tool's opt-in rules (stricter type options, pedantic lint groups)
+
+Propose `standard` for every tool unless the project's existing configuration is clearly looser or stricter, in which case propose that level and say why. State the level and how warnings are treated for each tool in the proposal, and let the developer change it per tool. Use the tool's own mechanism for warnings-as-errors (for example `--max-warnings 0`, `--warnings-as-errors`, `-D warnings`). When existing violations make `standard` fail today, handle them through the baseline options below rather than lowering the level.
 
 Use three tiers, and keep each fast enough for its trigger:
 - **Pre-commit**: seconds. Operates on staged files only: formatter, linter, secret scan, file-hygiene guards. Auto-fixes are re-staged only when the developer opted into that
@@ -61,6 +68,7 @@ Use three tiers, and keep each fast enough for its trigger:
 
 Ask the developer about:
 - Which proposed tools to add, and which to leave out
+- The strictness level for each tool, and whether warnings fail the check
 - How to handle existing violations when a tool is new: fix them in a separate commit, record a baseline or ignore list, or enable the tool only for changed files. Never mass-reformat or mass-fix without approval
 - The hook manager when none exists (see Phase 4), and whether pre-push should run tests
 - Whether CI should be updated in the same change
