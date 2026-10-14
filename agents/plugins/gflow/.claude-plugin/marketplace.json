@@ -1,0 +1,16 @@
+{
+  "name": "gflow",
+  "owner": {
+    "name": "Gerson Scanapieco"
+  },
+  "metadata": {
+    "description": "Local marketplace for the gflow plugin."
+  },
+  "plugins": [
+    {
+      "name": "gflow",
+      "source": "./",
+      "description": "Gerson's development flow: scope work in Linear, plan it, and execute it."
+    }
+  ]
+}

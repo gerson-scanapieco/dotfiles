@@ -1,0 +1,7 @@
+interface:
+  display_name: "Watch PR"
+  short_description: "Watch a GitHub PR and address new review feedback"
+  default_prompt: "Use $watch-pr to watch the current branch PR for review feedback."
+
+policy:
+  allow_implicit_invocation: false

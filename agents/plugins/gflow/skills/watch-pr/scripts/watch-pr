@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# Polls a GitHub pull request and prints one line per new review, inline
+# comment, or conversation comment not authored by the authenticated user.
+# Prints a terminal line and exits once the pull request is merged or closed.
+# Seen item IDs persist in STATE_FILE so a re-armed watcher skips them.
+#
+# With --once, the script exits after the poll that reports feedback or a poll
+# error, or with WINDOW_EXPIRED once MAX_SECONDS elapse (default 1800), so a
+# harness that only wakes the agent when a background process exits can use it.
+
+set -uo pipefail
+
+usage() {
+  echo "Usage: watch-pr PR_URL STATE_FILE [INTERVAL_SECONDS] [--once [MAX_SECONDS]]" >&2
+  exit 2
+}
+
+[[ $# -ge 2 ]] || usage
+pr_url="$1"
+state_file="$2"
+interval="${3:-300}"
+once=false
+max_seconds=1800
+if [[ "${4:-}" == "--once" ]]; then
+  once=true
+  max_seconds="${5:-1800}"
+elif [[ -n "${4:-}" ]]; then
+  usage
+fi
+
+[[ "$pr_url" =~ ^https://github\.com/([^/]+)/([^/]+)/pull/([0-9]+)/?$ ]] || usage
+repository="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+number="${BASH_REMATCH[3]}"
+
+mkdir -p "$(dirname "$state_file")"
+touch "$state_file"
+
+me=""
+failures=0
+reported=false
+started="$(date +%s)"
+
+poll() {
+  local state reviews inline conversation
+
+  [[ -n "$me" ]] || me="$(gh api user --jq .login)" || return 1
+  state="$(gh pr view "$pr_url" --json state --jq .state)" || return 1
+
+  reviews="$(gh api --paginate "repos/$repository/pulls/$number/reviews" \
+    --jq '.[] | select(.state != "PENDING") | select(.state != "COMMENTED" or (.body // "") != "") |
+      "review-\(.id)\tREVIEW \(.state) by \(.user.login): \(.html_url)\t\(.user.login)"')" || return 1
+  inline="$(gh api --paginate "repos/$repository/pulls/$number/comments" \
+    --jq '.[] | "inline-\(.id)\tINLINE_COMMENT by \(.user.login) on \(.path): \(.html_url)\t\(.user.login)"')" || return 1
+  conversation="$(gh api --paginate "repos/$repository/issues/$number/comments" \
+    --jq '.[] | "comment-\(.id)\tCOMMENT by \(.user.login): \(.html_url)\t\(.user.login)"')" || return 1
+
+  while IFS=$'\t' read -r id message author; do
+    [[ -n "$id" ]] || continue
+    grep -qxF "$id" "$state_file" && continue
+    echo "$id" >> "$state_file"
+    [[ "$author" == "$me" ]] && continue
+    echo "NEW_FEEDBACK $message"
+    reported=true
+  done <<< "$(printf '%s\n%s\n%s\n' "$reviews" "$inline" "$conversation")"
+
+  case "$state" in
+    MERGED) echo "PR_MERGED $pr_url"; exit 0 ;;
+    CLOSED) echo "PR_CLOSED $pr_url"; exit 0 ;;
+  esac
+}
+
+while true; do
+  if poll; then
+    failures=0
+  else
+    failures=$((failures + 1))
+    if [[ $failures -ge 3 ]]; then
+      echo "POLL_ERROR $failures consecutive failures polling $pr_url"
+      reported=true
+    fi
+  fi
+  if $once; then
+    $reported && exit 0
+    if (( $(date +%s) - started >= max_seconds )); then
+      echo "WINDOW_EXPIRED $pr_url"
+      exit 0
+    fi
+  fi
+  sleep "$interval"
+done
