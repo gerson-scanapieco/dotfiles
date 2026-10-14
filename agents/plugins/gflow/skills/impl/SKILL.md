@@ -1,15 +1,15 @@
 ---
 name: impl
 allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Bash(mix:*), Bash(gh:*), sequential-thinking(*), Glob(*), Grep(*), Read(*), Write(*), Edit(*)
-description: Read an issue from Linear and implement it exactly as specified. Creates a branch, writes tests first, implements the feature, commits frequently, opens a PR, and updates the Linear issue.
+description: Implement the plan posted on a Linear issue exactly as written. Creates a branch, writes tests first, implements each step, commits frequently, opens a PR, and updates the Linear issue. Requires a plan from the `plan` skill.
 argument-hint: [Linear issue ID]
 ---
 
 ## Context
 
-Read the contents of Linear issue $ARGUMENTS, including attachments. If the issue has any parent or sibling issues, read those as well since they have important context. Perform the implementation described in the ticket EXACTLY as it is specified.
+Read the contents of Linear issue $ARGUMENTS, including attachments. If the issue has any parent or sibling issues, read those as well since they have important context.
 
-If a comment on the issue contains a detailed implementation plan (e.g. from the `plan` skill), that plan is the primary source of truth for implementation steps and ordering — follow it directly instead of re-deriving an approach. A ticket carrying such a plan needs less architectural judgment to execute, making this a good candidate to run under a cheaper/faster model if your harness lets you pick one per task.
+The work is defined by the implementation plan that the `plan` skill posted as a comment on the issue. That plan is the source of truth for the technical approach, the steps, and their order: follow it exactly instead of re-deriving an approach. **If the issue has no plan comment, stop and tell the developer to run `plan` first. Do not implement from the ticket alone.** Because the plan has already settled the architecture, this is a good candidate to run under a cheaper/faster model if your harness lets you pick one per task.
 
 ## Your Comprehensive Task
 
@@ -17,15 +17,14 @@ If a comment on the issue contains a detailed implementation plan (e.g. from the
 
 - **MANDATORY**: Read the entirety of Linear issue $ARGUMENTS, including its project, labels, attachments, and all comments
 - **MANDATORY**: Read any parent issues, sub-issues, and related issues for full context
-- **If no plan comment exists**: analyze any screenshots present in the issue $ARGUMENTS for tickets with the label "Feature" directly — these screenshots define how the UI must look. If a plan comment exists, follow its UI spec instead
+- **MANDATORY**: Confirm the issue has a plan comment from the `plan` skill, and read it in full. Without one, stop as described above
+- Follow the plan's UI spec for tickets with the label "Feature". The plan already translates any screenshots into that spec
 
 ### Phase 2: Execute the plan
 
 - **MANDATORY**: Check if current branch is associated with the given Linear identifier. If not, create a new git branch for the work. It should be named after the Linear ticket identifier
-- **If a plan comment exists**: implement it step by step, in its order, writing each step's test(s) before that step's code
-- **If no plan comment exists**: start by implementing the unit tests for the feature EXACTLY as specified, then the feature implementation EXACTLY as specified. If there is missing information, describe your assumptions before proceeding
+- Implement the plan step by step, in its order, writing each step's test(s) before that step's code. If a step turns out to be wrong or impossible, stop and tell the developer rather than improvising a different approach
 - **MANDATORY**: Perform small, incremental git commits for each logical unit of work
-- If the issue description has an "Implementation Steps" checklist, tick off each item in the description via `linear-server` as its step is completed
 - **MANDATORY**: Use short, descriptive commit titles and descriptions
 - **MANDATORY**: Verify that the implementation works as expected by exercising it the way a user would, not only through unit tests. This applies to every change: front-end, CLI, API, background jobs, and refactors that claim to preserve behavior
   - If the repository has a project-local verification skill (`verify-*` in `.claude/skills/` or `.agents/skills/`), use it: launch the app, drive the affected feature from its feature map, and keep the captured evidence

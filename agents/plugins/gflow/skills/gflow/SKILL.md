@@ -1,6 +1,6 @@
 ---
 name: gflow
-description: Drive a piece of work end to end — scope it with spec, plan it with plan, implement it with impl, review the branch with the review skill and fix it locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
+description: Drive a piece of work end to end — specify it with spec, scope and plan it with plan, implement it with impl, review the branch with the review skill and fix it locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
 disable-model-invocation: true
 argument-hint: [problem description or Linear issue ID] [--draft]
 ---
@@ -12,12 +12,14 @@ You are the driver for the developer's main work loop. You do not reimplement th
 Input in $ARGUMENTS is a free-text problem description or a Linear issue ID, plus optional flags:
 - `--draft`: open the pull request as a draft. Without it, open it ready for review.
 
+`spec`, `plan`, and `impl` always run in that order: every piece of work is specified, then planned, then implemented. A phase is skipped only when its output already exists (see Phase 0). `spec` clarifies what to build and its acceptance criteria, `plan` scopes the work and defines how, and `impl` carries the plan out.
+
 Each invoked skill keeps its own approval gates. Never answer them on the developer's behalf; when a skill ends its turn waiting for approval, wait too, then continue that skill and the rest of this flow once the developer responds.
 
 ## Phase 0: Find the starting point
 
 If $ARGUMENTS is a Linear issue ID, read the issue and its comments, and the current branch's state, and resume from the first phase not yet done:
-- The issue is already scoped (has Implementation Guidance and Acceptance Criteria) → skip Phase 1
+- The issue already has Acceptance Criteria → skip Phase 1
 - The issue has a `plan` plan comment → skip Phase 2
 - A branch for the issue already has implementation commits → skip Phase 3
 - A pull request for the branch is already open → go to Phase 6
@@ -26,13 +28,13 @@ State which phases you are skipping and why before continuing.
 
 ## Phase 1: Spec
 
-Invoke the `spec` skill with the problem description or issue ID. When it finishes, collect the identifiers of the issues it created.
-
-This flow ships one issue per run. If `spec` produced more than one issue, ask the developer which one to drive now, and remind them to run `gflow` again for the rest.
+Invoke the `spec` skill with the problem description or issue ID. It produces one issue with acceptance criteria. Collect its identifier.
 
 ## Phase 2: Plan
 
-Invoke the `plan` skill with the chosen issue ID.
+Invoke the `plan` skill with the issue ID. It scopes the work and may propose splitting it into several issues or a project, which it creates after the developer approves.
+
+This flow ships one issue per run. If `plan` split the work into more than one issue, ask the developer which one to drive now (the one `plan` planned), and remind them to run `gflow` again for the rest.
 
 ## Phase 3: Execute
 

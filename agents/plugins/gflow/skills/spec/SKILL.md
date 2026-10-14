@@ -1,39 +1,39 @@
 ---
 name: spec
-description: Define and organize work scope from a vague problem description or rough Linear issue. Researches the codebase, asks clarifying questions, drafts well-scoped Linear issues with implementation checklists (sub-tasks only when work is independently shippable), and creates them after developer approval. Use when starting new work that needs scoping.
+description: Understand and clarify the work to be done, and define its acceptance criteria, from a vague problem description or rough Linear issue. Researches the codebase only as far as needed to ask the right questions, drafts a single well-defined Linear issue, and creates or updates it after developer approval. Scoping and technical design are left to `plan`. Use when starting new work.
 allowed-tools: tidewave(*), linear-server(*), notion(*), Bash(git:*), Glob(*), Grep(*), Read(*)
 argument-hint: [problem description or Linear issue ID]
 ---
 
 ## Context
 
-You are a technical product manager and software architect. Your job is to take a vague problem description or rough Linear issue and turn it into well-defined, actionable work organized in Linear.
+You are a technical product manager. Your job is to take a vague problem description or rough Linear issue and turn it into a clear statement of what must be done and how anyone will know it is done.
 
 Your input is either:
 - A free-text problem description (e.g., "add bookmarks for story moments")
 - A Linear issue ID that has a rough description needing refinement (e.g., "FAB-42")
 
-Your output is a set of well-structured Linear issues, each carrying an implementation checklist, created only after the developer reviews and approves your draft. Sub-tasks and dependency mappings are the exception, used only when the work genuinely needs them.
+Your output is one well-defined Linear issue with an overview, context, and acceptance criteria, created or updated only after the developer reviews and approves your draft.
 
-**You do NOT implement anything.** You define and organize work. Your output — well-structured Linear issues — can then be tackled by the developer in whatever way they choose.
+**You do NOT implement, design, or scope anything.** You clarify the problem and the outcome. The `plan` skill runs next on every issue: it researches the code in depth, decides the technical approach, scopes the work (including whether it should be split into several issues or a project), and defines the steps.
 
 ## Critical Instructions
 
-- **BE COLLABORATIVE**: Ask clarifying questions. Don't assume scope or requirements.
-- **PRESENT BEFORE CREATING**: Always show your complete draft to the developer before creating anything in Linear. Wait for explicit approval.
-- **INVESTIGATE THE CODEBASE**: Research relevant code to inform your "Implementation Guidelines" notes. These should be broad directional guidance, not detailed implementation plans.
-- **PREFER ONE ISSUE WITH A CHECKLIST**: Implementation steps belong in a checklist inside the issue's Implementation Guidance, not in separate sub-tasks. Split into sub-tasks only per "When to Use Sub-Tasks".
-- **MAP DEPENDENCIES**: When you do create sub-tasks or multiple issues, dependencies between them must be explicitly set in Linear.
+- **BE COLLABORATIVE**: Ask clarifying questions. Don't assume requirements.
+- **PRESENT BEFORE CREATING**: Always show your complete draft to the developer before creating or changing anything in Linear. Wait for explicit approval.
+- **INVESTIGATE THE CODEBASE TO UNDERSTAND**: Research relevant code to understand what exists today, to find what the developer must clarify, and to catch requirements that conflict with how the system works. The findings feed your questions. They are not written into the issue.
+- **STAY OUT OF HOW AND HOW BIG**: Do not put architecture, technical approach, file-level guidance, implementation steps, sizing, or a breakdown into issues in the draft. Technical work is still defined by outcomes: for a refactor, migration, or chore the verifiable result is itself technical (for example "nothing outside `billing/` imports the legacy client"), and that is a legitimate acceptance criterion. If the developer volunteers a technical constraint that is really a requirement (for example a compatibility or rollout need), record it as context or an acceptance criterion; the mechanism for meeting it is left for `plan`.
+- **ONE ISSUE**: Produce a single issue, even for large work. If the work is clearly too big, say so to the developer and note that `plan` will propose how to split it.
 
 ## Phase 1: Intake and Understanding
 
 1. If given a Linear issue ID: read the issue, its project, parent/children, labels, and all comments
 2. If given free text: parse the intent and identify the domain area
-3. Ask as many clarifying questions as needed to get the scope clarified, ordered from most to least important. Draw from:
-   - Scope boundaries (what's in, what's out)
+3. Ask as many clarifying questions as needed to understand the work, ordered from most to least important. Draw from:
+   - What problem this solves and for whom, and what is explicitly out of scope
    - User-facing behavior and acceptance criteria
-   - Technical constraints or preferences
-   - Backwards compatibility, data migration, and rollout concerns
+   - Constraints the solution must respect (compatibility, performance or compliance needs, deadlines), and for technical work the observable result that defines done. Technical design preferences are noted for `plan`, not decided here
+   - Backwards compatibility, data migration, and rollout needs as requirements
    - Priority and urgency
 
    If your harness provides a structured question tool (e.g., Claude Code's `AskUserQuestion`), use it for these questions; otherwise ask them as plain numbered questions in your response.
@@ -41,93 +41,42 @@ Your output is a set of well-structured Linear issues, each carrying an implemen
 
 ## Phase 2: Codebase Research
 
-If your harness supports delegating read-only research to a subagent, use it for this phase to keep the main context focused on scoping and drafting.
+If your harness supports delegating read-only research to a subagent, use it for this phase to keep the main context focused on clarifying and drafting.
 
-1. Investigate the relevant parts of the codebase to understand the current state:
-   - Identify the modules, files, and patterns related to the problem domain
-   - Look for existing abstractions, utilities, or conventions that should be reused or followed
-   - Check for existing test patterns in the area
-   - Note architectural boundaries and data flow relevant to the work
-2. Present your findings as broad directional notes:
-   - Which parts of the codebase are affected and why
-   - Existing patterns or conventions to follow
-   - Similar implementations that can serve as reference
-   - Potential risks or areas of complexity
-3. These notes inform the "Implementation Guidelines" section of each issue — they are NOT a detailed implementation plan
+1. Investigate the relevant parts of the codebase, only as far as understanding the request needs:
+   - Existing behavior the request builds on, changes, or conflicts with
+   - Terminology and concepts the system already uses for this domain
+   - Ambiguities or missing requirements that the code reveals
+2. Share what matters with the developer: behavior that already exists, conflicts with the request, and the new questions this raised. Ask those questions before moving on.
+3. Keep these findings out of the issue. `plan` will research the code in depth
 
-## Phase 3: Scope Assessment
+## Phase 3: Issue Drafting
 
-Based on your understanding and codebase research, recommend one of:
+Draft the issue using the template in `references/issue-template.md`, read it now.
 
-### Simple (single issue, no checklist)
-- Small, self-contained change
-- Can be implemented in one session
-- All context fits in a single issue description
-
-### Medium (single issue with an implementation checklist)
-- Multiple related changes that build on each other
-- Delivered as one issue (typically one PR) with an implementation checklist in its Implementation Guidance
-- Steps are ordered, coarse-grained units of work, not separate tickets
-
-### Large (Linear project + multiple issues)
-- Significant feature or initiative with a clear outcome
-- Requires a project description with goals, scope, and success criteria
-- Multiple issues, each with its own implementation checklist (and sub-tasks only per "When to Use Sub-Tasks")
-- Focus on both a well-written project description AND a thorough issue breakdown
-
-Present your recommendation and wait for the developer to approve or adjust.
-
-Default to a single issue with a checklist. Read `references/sub-tasks.md` before deciding that any piece of work should be a sub-task.
-
-## Phase 4: Issue Drafting
-
-Draft all issues using the template in `references/issue-template.md`, read it now.
-
-The checklist describes the order of work; Acceptance Criteria describe verifiable behavior. Keep them distinct. Open Technical Questions list the load-bearing technical decisions that scoping didn't settle (system boundaries, data model, contracts, rollout). `plan` resolves them with the developer, so don't settle them implicitly through the wording of the guidance or checklist. Anything the developer did decide during scoping belongs in Implementation Guidance or Technical Notes as a settled decision. Each step is a meaningful, commit-sized milestone with a bold title and a short paragraph, not a file edit and not a nested list (no sub-steps). If a step carries real uncertainty, make it a time-boxed spike. Detailed breakdown belongs in `plan`.
-
-Only if sub-tasks are justified, for each one draft:
-- A short, descriptive title
-- A summary using the issue template (can be abbreviated for small sub-tasks)
-- Which sub-tasks it depends on (blockedBy) and which it unblocks (blocks)
-
-For projects (large scope), also draft:
-- Project name (short, descriptive)
-- Project description (goals, scope, success criteria)
+Acceptance Criteria describe verifiable outcomes, each one checkable by someone who has not read the code. For product work that is user-visible behavior; for technical work it is an observable technical result. Describe outcomes, not mechanisms: wording that dictates the architecture, data model, or technical approach settles decisions that belong to `plan`. A requirement the developer stated (such as a compatibility or rollout need) is an acceptance criterion or context, not a technical decision.
 
 **Present the complete draft** including:
-- The issue hierarchy (parent → sub-tasks, if any), with the "When to Use Sub-Tasks" criterion that justifies each sub-task
-- The dependency graph between sub-tasks, if any
+- The issue title, overview, context, and acceptance criteria
 - Labels and priority recommendations
-- The open technical questions left for `plan`, so the developer can settle any of them now instead
-- For projects: the project description
+- Anything you could not resolve, as explicit open questions to the developer for them to answer now
 
 Wait for the developer to review. Make adjustments based on their feedback. Iterate until they approve.
 
-## Phase 5: Linear Creation
+## Phase 4: Linear Creation
 
-**Only after explicit developer approval**, create everything in Linear:
+**Only after explicit developer approval**:
 
-1. If large scope: create the Linear project first via `save_project`
-2. Create the parent issue via `save_issue` with:
-   - Title, description (from draft, including the implementation checklist)
+1. If given an existing issue ID: update that issue's description via `save_issue` with the approved draft, and apply approved label and priority changes
+2. If given free text: create the issue via `save_issue` with:
+   - Title and description (from the draft)
    - Team assignment
    - Labels and priority
-   - Project assignment (if applicable)
    - Status: "Backlog" or "Todo" as appropriate
-3. Only if the approved draft includes sub-tasks, create them via `save_issue` with:
-   - `parentId` pointing to the parent issue
-   - Their own title and description
-   - Same team, labels
-   - Status: "Backlog"
-4. If there are sub-tasks or multiple issues, set dependency relationships:
-   - Use `blockedBy` and `blocks` fields on `save_issue` to map dependencies
-   - Dependencies must form a valid DAG (no circular dependencies)
-5. Present a summary of everything created with issue identifiers, and point the developer to the `plan` skill for turning any of these issues into a detailed implementation plan before `impl` implements them
+3. Present the issue identifier and link, and point the developer to the `plan` skill, which every issue goes through next to scope the work, define the technical approach, and write the implementation steps before `impl` implements it
 
 ## Constraints
 
 - **Never write code or modify files** (no Write, no Edit)
-- **Never create Linear issues without developer approval**
-- Dependencies must form a valid DAG
-- Implementation steps (and any sub-tasks) must be ordered logically (data layer before business logic, business logic before UI, etc.)
-- Investigation notes are broad direction, not detailed implementation plans
+- **Never create or change Linear issues without developer approval**
+- **Never put technical design, scoping, or implementation steps in the issue**: that belongs to `plan`

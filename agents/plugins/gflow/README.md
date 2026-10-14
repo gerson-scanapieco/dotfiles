@@ -7,9 +7,9 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 | Skill | What it does |
 |---|---|
 | `gflow` | Drives the whole flow end to end, invoking the skills below |
-| `spec` | Turns a vague problem or rough Linear issue into well-scoped issues |
-| `plan` | Turns a scoped issue into a step-by-step implementation plan, posted as a comment |
-| `impl` | Implements an issue test-first, commits, opens a PR and updates Linear |
+| `spec` | Clarifies a vague problem or rough Linear issue into one issue with acceptance criteria (the *what*) |
+| `plan` | Scopes the work (splitting it into issues or a project when needed) and defines the architecture, technical approach and ordered steps (the *how*), posted as a comment |
+| `impl` | Implements the issue's plan test-first, commits, opens a PR and updates Linear. Requires a plan |
 | `watch-pr` | Polls a PR every 5 minutes, assesses new feedback and addresses it after approval (max 3 loops) |
 | `explain` | Explains code, a file or a concept in plain language for a non-technical reader |
 | `create-verification-skill` | Generates a project-local `verify-<app>` skill that launches and drives the app and captures proof |
