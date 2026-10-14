@@ -53,18 +53,24 @@ Before dispatching reviewers, write a brief for them:
 - **Requirements**: a numbered list of the behaviors and acceptance criteria it must satisfy
 - **Risk map**: the changed files and areas ranked by risk (auth, money, data migrations, concurrency, public contracts, error handling) and files to skim (generated code, lockfiles, snapshots, vendored code)
 - **Surroundings**: the callers, callees, and sibling code the diff interacts with that reviewers must read to judge it
+- **Configuration surface**: the environment variables, secrets, settings, and feature flags the diff reads or adds, and the places the project declares configuration. This feeds the security and configuration lenses
 - **Dependents**: who and what relies on the changed code (callers, consumers, jobs, integrations, public contracts, data), found by searching the codebase. This feeds the document's impact section as well as the reviewers
 
 ## Phase 2: Parallel specialist review
 
-Dispatch one subagent per lens, concurrently, each with fresh context so none inherits another's assumptions. Give each the brief, the diff range, how to read files at the head, the conventions, and the deterministic check results. If the harness cannot dispatch subagents from here (for example when this skill itself already runs inside a subagent), run the lenses yourself one after another with the same discipline, forming each lens's conclusions before reading the next.
+Dispatch one subagent per lens (six), concurrently, each with fresh context so none inherits another's assumptions. Give each the brief, the diff range, how to read files at the head, the conventions, and the deterministic check results. If the harness cannot dispatch subagents from here (for example when this skill itself already runs inside a subagent), run the lenses yourself one after another with the same discipline, forming each lens's conclusions before reading the next.
 
 Lenses:
 1. **Correctness**: logic errors, edge cases (empty, null, boundary, large, concurrent), error handling and propagation, resource leaks, off-by-one, state and ordering bugs, and behavior that changed for existing callers.
 2. **Requirements and tests**: trace each requirement to the code and the test that proves it; report requirements that are missing, only partially met, or untested, behavior added that nobody asked for, and tests that cannot fail or assert the wrong thing.
-3. **Security**: injection, authn/authz gaps, secrets, unsafe deserialization, SSRF, path traversal, tenant isolation, logging of sensitive data, and trust placed in client input.
+3. **Security and access control**: read `references/security-checklist.md` (OWASP Top 10:2025) and walk the diff against every category. Find how the project already decides who may do or see what and how it handles authentication, cryptography, input, and logging, then compare every new or changed path to it. Report each finding with its category ID (for example `A01`). Say what could not be judged from the diff alone instead of staying silent.
 4. **Design and consistency**: boundaries and layering, duplicated logic that already exists elsewhere in the codebase, deviation from the project's established patterns, public API and schema compatibility, and migration safety.
-5. **Performance and operations**: N+1 queries, unbounded work or memory, missing indexes, blocking calls on hot paths, retry and timeout behavior, observability gaps, and rollout risks.
+5. **Performance and operations**: N+1 queries, unbounded work or memory, missing indexes, blocking calls on hot paths, retry and timeout behavior, and observability gaps.
+6. **Configuration and deployment**: everything the change needs from its environment that the diff must also provide.
+   - New or changed environment variables, secrets, settings, and feature flags that the code reads, and whether each is declared everywhere the project declares them (config templates, `.env.example`, deploy manifests, CI, infrastructure, docs)
+   - Defaults and validation: a missing or malformed value that fails late or silently instead of at boot, defaults that are unsafe in production, and values that differ by environment
+   - Feature flag lifecycle: flags that are checked but never created, and defaults that enable unfinished behavior
+   - Rollout: migration, deploy, and flag ordering, backward compatibility during a rolling deploy, and rollback safety
 
 Each reviewer returns findings only in this shape, and nothing else:
 - `file:line` (the line in the head version)
