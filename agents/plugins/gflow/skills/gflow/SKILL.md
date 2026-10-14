@@ -48,7 +48,7 @@ Review the branch before anyone else sees it, using the `review` skill. Repeat t
 2. Read the result:
    - `confirmed` findings are already independently verified by the review, so do not re-derive them. Quickly sanity-check each against the code you just wrote before changing it, and skip with a note any that no longer apply
    - `needs decision` items are not acted on; they go to the developer
-3. For each confirmed finding: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes. The review ignores uncommitted work, so commit every fix before the next round.
+3. For each confirmed defect: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes. Fix the confirmed quality findings too, as one commit per file or per standard rather than per finding, keeping them apart from the defect fixes. The review ignores uncommitted work, so commit every fix before the next round.
 4. Run the repository's full relevant test suite after the round's fixes.
 
 Present the `needs decision` items to the developer with the rest of the review summary and wait for their call before Phase 5. If none exist, continue without waiting.

@@ -26,8 +26,9 @@ Instructions for the personal review document. Load this file only when the revi
    - Mark where confirmed findings from the next section land, so the reader sees them in context
    - A short list of mechanical or low-risk changes (renames, generated code, formatting, lockfiles) they can skim
 5. **Code review**: the result of the specialist and verification phases.
-   - Confirmed findings grouped by file, each with severity, `file:line`, the claim, the scenario, the evidence, and a suggested fix
+   - Confirmed defects grouped by file, each with severity, `file:line`, the claim, the scenario, the evidence, and a suggested fix
    - `needs decision` items as questions for the author
+   - **Code quality**: confirmed quality findings in their own group after the defects, visually distinct from them and without severity, grouped by file, each with `file:line`, the claim, and a suggested fix. Group the findings by standard (naming, SOLID, vertical slices, persistence boundary, and so on) when there are many
    - **Requirements trace**: each requirement with `met`, `partial`, `missing`, or `untested`, and where
    - **Deterministic checks**: what ran and the results
    - **Continuity**: what earlier reviews raised and whether the new commits addressed it
@@ -35,4 +36,4 @@ Instructions for the personal review document. Load this file only when the revi
 
 Keep the explanation sections concise and the review section strict: five findings that are certainly real beat fifteen that might be.
 
-After writing the file, print to the terminal only: the verdict, the counts of findings by severity, and the file path.
+After writing the file, print to the terminal only: the verdict, the counts of defects by severity, the count of quality findings, and the file path.
