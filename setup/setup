@@ -134,6 +134,8 @@ echo "Initializing agent settings, skills, and commands..."
 
 echo "Installing Claude Code plugins..."
 
+claude plugin marketplace add "${DOTFILES}/agents/plugins/gflow"
+claude plugin install gflow@gflow
 claude plugin install braintrust@braintrust-claude-plugin
 
 ####################################################################
