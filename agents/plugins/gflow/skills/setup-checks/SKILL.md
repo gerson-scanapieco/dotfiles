@@ -21,6 +21,8 @@ Read the repository; ask the developer only what you cannot observe.
 3. **Existing hooks**: the hook manager in use (husky, lefthook, pre-commit, simple-git-hooks, a custom `core.hooksPath`), `.git/hooks/*` that are not samples, and how hooks get installed for a fresh clone.
 4. **Conventions**: `AGENTS.md`/`CLAUDE.md`, `README`, and `CONTRIBUTING` instructions about running checks.
 
+For each ecosystem found, read its reference before Phase 2 and again before proposing tools: `references/js-ts.md` (JavaScript, TypeScript, Next.js) or `references/elixir.md` (Elixir, Phoenix). These are defaults, not rules: what the repository already uses takes precedence, and an ecosystem with no reference file is handled from its own conventions.
+
 Run each existing check once on the current tree to learn whether it passes today, how long it takes, and whether it can fix issues automatically. Record the results; do not fix anything yet.
 
 ## Phase 2: Report
