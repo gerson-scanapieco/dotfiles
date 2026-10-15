@@ -11,6 +11,7 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 | `plan` | Scopes the work (splitting it into issues or a project when needed) and defines the architecture, technical approach and ordered steps (the *how*), posted as a comment |
 | `impl` | Implements the issue's plan test-first, commits, opens a PR and updates Linear. Requires a plan |
 | `watch-pr` | Polls a PR every 5 minutes, assesses new feedback and addresses it after approval (max 3 loops) |
+| `address-pr-threads` | Assesses unresolved review threads and review-body remarks on the current branch's PR, then addresses them after approval |
 | `explain` | Explains code, a file or a concept in plain language for a non-technical reader |
 | `create-verification-skill` | Generates a project-local `verify-<app>` skill that launches and drives the app and captures proof |
 | `maintain-verification-skill` | Periodic audit of a verification skill and its feature map against the source and a live run |
@@ -59,7 +60,7 @@ opencode v2 has no plugin marketplace and its plugins (`plugins` in `opencode.js
 }
 ```
 
-Skills are not namespaced: each ID comes from its directory name, so mention them as `@spec`, `@plan`, `@impl`, `@watch-pr`, `@explain`, `@create-verification-skill`, `@maintain-verification-skill`, `@setup-checks`, `@review` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
+Skills are not namespaced: each ID comes from its directory name, so mention them as `@spec`, `@plan`, `@impl`, `@watch-pr`, `@address-pr-threads`, `@explain`, `@create-verification-skill`, `@maintain-verification-skill`, `@setup-checks`, `@review` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
 
 ## Get started
 
