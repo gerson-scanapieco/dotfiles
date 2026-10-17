@@ -27,13 +27,6 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias grep="grep --color=auto"
 
-# Pretty print the PATH
-function path
-    for p in $PATH
-        echo $p
-    end
-end
-
 # yazi: cd to the directory yazi was in on exit
 function y
     set tmp (mktemp -t "yazi-cwd.XXXXXX")
