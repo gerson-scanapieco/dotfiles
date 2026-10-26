@@ -48,6 +48,8 @@ State the target, the diff size, the requirements source, and which deterministi
 
 ## Phase 1: Understand the change
 
+The lead runs this phase and Phases 3 to 5 itself.
+
 Before dispatching reviewers, write a brief for them:
 - **Intent**: what the change is meant to do, in two or three sentences
 - **Requirements**: a numbered list of the behaviors and acceptance criteria it must satisfy
@@ -59,6 +61,8 @@ Before dispatching reviewers, write a brief for them:
 ## Phase 2: Parallel specialist review
 
 Dispatch one subagent per lens (six), concurrently, each with fresh context so none inherits another's assumptions. Give each the brief, the diff range, how to read files at the head, the conventions, the deterministic check results, and its rules from `references/lens-rules.md`. If the harness cannot dispatch subagents from here (for example when this skill itself already runs inside a subagent), run the lenses yourself one after another with the same discipline, forming each lens's conclusions before reading the next.
+
+Set the model and effort explicitly on every dispatch so the lenses do not inherit the lead's: `sonnet` for all six, with `high` effort for correctness and security and `medium` for the rest. The lead keeps its own model and effort for everything else.
 
 Lenses:
 1. **Correctness**: logic errors, edge cases (empty, null, boundary, large, concurrent), error handling and propagation, resource leaks, off-by-one, state and ordering bugs, and behavior that changed for existing callers.
