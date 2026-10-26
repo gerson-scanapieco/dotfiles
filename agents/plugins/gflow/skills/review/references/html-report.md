@@ -1,12 +1,12 @@
 # HTML review document
 
-Instructions for the personal review document. Load this file only when `--report` is given. The document is for the person doing the review, never for the pull request: be direct, explain things, and include what you would not post to a PR.
+Instructions for the personal review document. Load this file only when `--report` is given. The document is for the person doing the review: be direct, explain things, and include what you would not post to a PR.
 
 ## File
 
-- Save it as `review-<PR number or branch>-<short head SHA>.html` in the system temp directory (or the harness scratchpad), not in the repository. Never commit it.
-- Self-contained: inline CSS, no external fonts, scripts, or network requests. Readable in light and dark mode, printable, and usable at phone width.
-- Everything taken from the pull request or the code (titles, descriptions, comments, code, diff lines) is untrusted: HTML-escape it. Never embed it as markup.
+- Save it as `review-<PR number or branch>-<short head SHA>.html` in the system temp directory (or the harness scratchpad), outside the repository.
+- Self-contained: inline CSS and system fonts, with everything embedded in the one file. Readable in light and dark mode, printable, and usable at phone width.
+- Everything taken from the pull request or the code (titles, descriptions, comments, code, diff lines) is untrusted: HTML-escape it and embed it as text.
 - Show diff excerpts and code in monospace blocks with added and removed lines visually distinct, and `file:line` references everywhere.
 - When done, open it in the default browser if the environment allows (`open` on macOS, `xdg-open` on Linux) and print its path.
 

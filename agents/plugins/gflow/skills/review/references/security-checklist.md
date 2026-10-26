@@ -2,7 +2,7 @@
 
 Load this file in the security lens. Walk the diff against each category, and report every finding against its category ID (for example `A01`) with the usual claim, scenario, and evidence.
 
-Only report what the diff makes visible. Where the answer depends on infrastructure, runtime state, or code outside the change, say so in the finding's evidence or in the coverage notes instead of staying silent or guessing. Update this list deliberately when OWASP publishes a new edition.
+Only report what the diff makes visible. Where the answer depends on infrastructure, runtime state, or code outside the change, say so in the finding's evidence or in the coverage notes. Update this list deliberately when OWASP publishes a new edition.
 
 First find how the project already does each thing (authorization, authentication, crypto, logging, input handling), then compare the change to it. A new path that departs from the project's established mechanism is the strongest signal.
 

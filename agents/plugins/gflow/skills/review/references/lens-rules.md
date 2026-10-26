@@ -39,7 +39,7 @@ Do not report:
 - Something the project's `AGENTS.md` or `CLAUDE.md` explicitly allows or chooses
 - A finding already raised by a human or an earlier review, unless the new commits made it worse
 
-Say "no findings" rather than inventing one. Five findings that are certainly real beat fifteen that might be.
+A lens with nothing to report says "no findings". Five findings that are certainly real beat fifteen that might be.
 
 ## Correctness
 
