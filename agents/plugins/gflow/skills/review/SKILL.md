@@ -25,8 +25,8 @@ Input in $ARGUMENTS:
 Without `--post` or `--report`, the result is printed in the session. The flags are independent and can be combined.
 
 Verdicts:
-- `approve`: no `blocker` and no failing deterministic check caused by the change. `major` and `minor` findings and `needs decision` items do not prevent it: they go out as non-blocking comments
-- `request changes`: at least one `blocker`, or a failing deterministic check caused by the change
+- `approve`: no `blocker`. `major` and `minor` findings, `needs decision` items, and failing deterministic checks do not prevent it: they go out as non-blocking comments
+- `request changes`: at least one `blocker`
 - `comment`: you cannot rule out a `blocker`. A requirement is ambiguous in a way that could leave it unmet, or a material risk could not be judged from what is available. Say precisely what would turn it into `approve` or `request changes`
 
 Reviews are iterative. A `comment` is not a failure: later reviews of the same PR continue from it and eventually reach `approve` or `request changes`.
@@ -42,7 +42,7 @@ This skill is read-only with respect to the repository and GitHub, apart from th
 3. **Earlier reviews**: existing review threads and reviews are context. Report only what no human or earlier run already raised. For items an earlier review of your own raised (reviews by the authenticated user, from `gh api user`), check whether the new commits address them, and carry that into the conclusion.
 4. **Requirements**: the Linear issue ID from `--issue`, the PR title/branch/description, or the branch name. Read the issue, its acceptance criteria, and any plan comment (from the `plan` skill) via the Linear integration. Without an issue, derive the intended behavior from the PR description and commits, and say that requirements were inferred.
 5. **Conventions**: every applicable `AGENTS.md` and `CLAUDE.md`, plus the project's lint, format, and type configuration, so reviewers do not report what a deterministic tool already enforces.
-6. **Deterministic checks**: if the project has a check command (see the `setup-checks` skill) or documented test, lint, and type commands, and the head being reviewed is what is checked out with a clean working tree, run them once and keep the results. Failures are findings with the tool's own output as evidence. Otherwise read the PR's CI results through `gh pr checks` and note that checks were not run locally.
+6. **Deterministic checks**: if the project has a check command (see the `setup-checks` skill) or documented test, lint, and type commands, and the head being reviewed is what is checked out with a clean working tree, run them once and keep the results. Failures are reported as non-blocking comments with the tool's own output as evidence, and the PR owner addresses them before merging. Otherwise read the PR's CI results through `gh pr checks` and note that checks were not run locally.
 
 State the target, the diff size, the requirements source, and which deterministic checks ran before continuing.
 
