@@ -1,7 +1,7 @@
 ---
 name: review
 description: Thorough, read-only code review of a GitHub pull request or the current branch's commits. Fans out to parallel specialist reviewers, consolidates their findings, and concludes with approve, comment, or request changes. Prints the review in the session by default; with --report also produces a personal HTML review document, and with --post publishes inline comments and a review to the PR.
-argument-hint: [PR URL or number] [--post] [--report] [--issue <Linear ID>] [--base <branch>]
+argument-hint: "[PR URL or number] [--post] [--report] [--issue <Linear ID>] [--base <branch>]"
 model: opus
 effort: high
 ---

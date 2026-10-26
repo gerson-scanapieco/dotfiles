@@ -2,7 +2,7 @@
 name: explain
 description: Explain a piece of code, a file, a function, or a concept in plain language for a non-technical reader. Strips jargon, focuses on what it does and why it matters, and keeps the answer short.
 allowed-tools: Glob(*), Grep(*), Read(*), Bash(git:*)
-argument-hint: [code snippet, file path, function name, or concept]
+argument-hint: "[code snippet, file path, function name, or concept]"
 ---
 
 ## Context

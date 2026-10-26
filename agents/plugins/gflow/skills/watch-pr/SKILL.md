@@ -1,7 +1,7 @@
 ---
 name: watch-pr
 description: Watch a GitHub pull request every 5 minutes for new review feedback, assess it, and address it after user approval, for at most 3 watch loops or until the pull request is merged or closed.
-argument-hint: [PR URL]
+argument-hint: "[PR URL]"
 ---
 
 # Watch PR

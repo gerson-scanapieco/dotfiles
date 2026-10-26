@@ -2,7 +2,7 @@
 name: gflow
 description: Drive a piece of work end to end — specify it with spec, scope and plan it with plan, implement it with impl, review the branch with the review skill and fix it locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
 disable-model-invocation: true
-argument-hint: [problem description or Linear issue ID] [--draft]
+argument-hint: "[problem description or Linear issue ID] [--draft]"
 ---
 
 ## Context
