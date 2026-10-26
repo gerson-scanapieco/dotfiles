@@ -2,7 +2,7 @@
 name: gflow
 description: Drive a piece of work end to end — specify it with spec, scope and plan it with plan, implement it with impl, review the branch with the review skill and fix it locally, open a pull request, then hand the pull request to watch-pr to monitor and address new feedback.
 disable-model-invocation: true
-argument-hint: [problem description or Linear issue ID] [--draft]
+argument-hint: "[problem description or Linear issue ID] [--draft]"
 ---
 
 ## Context
@@ -42,13 +42,13 @@ Invoke the `impl` skill with the issue ID, but run only its Phase 1 and Phase 2.
 
 ## Phase 4: Local code review
 
-Review the branch before anyone else sees it, using the `review` skill. Repeat the following at most 3 rounds, or until a round has no confirmed findings:
+Review the branch before anyone else sees it, using the `review` skill. Repeat the following at most 3 rounds, or until a round has no findings:
 
-1. Delegate to a subagent with fresh context, so the review does not inherit the implementer's assumptions. Tell it to invoke the `review` skill with `--no-report --issue <Linear issue ID>` on the current branch, and to return the skill's output unchanged. The review skill runs with its own model and effort settings. If the harness cannot dispatch subagents, invoke the skill directly.
+1. Delegate to a subagent with fresh context, so the review does not inherit the implementer's assumptions. Tell it to invoke the `review` skill with `--issue <Linear issue ID>` on the current branch, and to return the skill's output unchanged. The review skill runs with its own model and effort settings. If the harness cannot dispatch subagents, invoke the skill directly.
 2. Read the result:
-   - `confirmed` findings are already independently verified by the review, so do not re-derive them. Quickly sanity-check each against the code you just wrote before changing it, and skip with a note any that no longer apply
+   - Findings are not independently re-verified by the review, so check each one against the code you just wrote before changing it, and skip with a note any that do not hold or no longer apply
    - `needs decision` items are not acted on; they go to the developer
-3. For each confirmed finding: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes. The review ignores uncommitted work, so commit every fix before the next round.
+3. For each finding that holds: make the smallest complete fix, add or update a test when it protects the behavior, run focused validation, and create one commit for it, staging only its changes. The review ignores uncommitted work, so commit every fix before the next round.
 4. Run the repository's full relevant test suite after the round's fixes.
 
 Present the `needs decision` items to the developer with the rest of the review summary and wait for their call before Phase 5. If none exist, continue without waiting.

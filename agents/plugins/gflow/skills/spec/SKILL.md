@@ -2,7 +2,7 @@
 name: spec
 description: Understand and clarify the work to be done, and define its acceptance criteria, from a vague problem description or rough Linear issue. Researches the codebase only as far as needed to ask the right questions, drafts a single well-defined Linear issue, and creates or updates it after developer approval. Scoping and technical design are left to `plan`. Use when starting new work.
 allowed-tools: tidewave(*), linear-server(*), notion(*), Bash(git:*), Glob(*), Grep(*), Read(*)
-argument-hint: [problem description or Linear issue ID]
+argument-hint: "[problem description or Linear issue ID]"
 ---
 
 ## Context

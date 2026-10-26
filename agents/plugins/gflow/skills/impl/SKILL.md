@@ -2,7 +2,7 @@
 name: impl
 allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Bash(mix:*), Bash(gh:*), sequential-thinking(*), Glob(*), Grep(*), Read(*), Write(*), Edit(*)
 description: Implement the plan posted on a Linear issue exactly as written. Creates a branch, writes tests first, implements each step, commits frequently, opens a PR, and updates the Linear issue. Requires a plan from the `plan` skill.
-argument-hint: [Linear issue ID]
+argument-hint: "[Linear issue ID]"
 ---
 
 ## Context

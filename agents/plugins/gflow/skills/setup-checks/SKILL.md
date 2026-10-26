@@ -1,7 +1,7 @@
 ---
 name: setup-checks
 description: Audit a project's deterministic verification (formatters, linters, type checkers, secret scans, and similar tools), work with the developer to add the missing ones, and wire them into git hooks and a single check command. Use when starting on a project, or when a project has no automatic guardrails before code is committed.
-argument-hint: [optional: ecosystem, tool, or area to focus on]
+argument-hint: "[optional: ecosystem, tool, or area to focus on]"
 ---
 
 ## Context

@@ -2,7 +2,7 @@
 name: plan
 description: Turn a specified Linear ticket into a scoped, detailed, step-by-step implementation plan and post it as a comment on the ticket. Researches the code, scopes the work (splitting it into issues or a project when it is too big for one), settles the technical decisions with the developer, and defines the ordered steps. Use after `spec` has created a ticket, and before `impl` implements it.
 allowed-tools: tidewave(*), linear-server(*), Bash(git:*), Glob(*), Grep(*), Read(*)
-argument-hint: [Linear issue ID]
+argument-hint: "[Linear issue ID]"
 model: opus
 effort: high
 ---
