@@ -16,7 +16,7 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 | `create-verification-skill` | Generates a project-local `verify-<app>` skill that launches and drives the app and captures proof |
 | `maintain-verification-skill` | Periodic audit of a verification skill and its feature map against the source and a live run |
 | `setup-checks` | Audits a project's formatters, linters and type checkers, adds the missing ones with you, and wires them into git hooks |
-| `review` | Parallel specialist reviewers with every finding independently verified, concluding `approve`, `comment` or `request changes`. Produces a personal HTML document, or with `--post` publishes inline comments and a review to the PR |
+| `review` | Parallel specialist reviewers with per-lens flag and do-not-flag rules, concluding `approve`, `comment` or `request changes`. Prints the review in the session; `--report` also writes a personal HTML document and `--post` publishes inline comments and a review to the PR |
 
 ## Install
 

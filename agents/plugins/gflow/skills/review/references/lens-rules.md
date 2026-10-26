@@ -2,6 +2,30 @@
 
 Every lens receives the **Shared rules** and its own section, and nothing else from this file. Telling a reviewer what not to flag is what keeps its output worth reading: a finding that is true but not worth the author's time still costs them attention.
 
+When unsure whether something belongs in the review, leave it out.
+
+## Severity
+
+Severity is what happens if the change ships as it is.
+
+- `blocker`: exploitable; loses or corrupts data; causes an outage; breaks existing callers; leaves a requirement unmet
+- `major`: a real defect with a concrete scenario that is bounded or recoverable; a requirement only partly met or with no test that would fail without it
+- `minor`: correct but weaker than it should be: maintainability, a small inconsistency, a low-impact edge case
+
+Only a `blocker` blocks the merge; `major` and `minor` are reported as non-blocking comments. Rate by the scenario you can describe, not by the category of the issue: an injection pattern with no reachable untrusted input is not a `blocker`.
+
+## Self-check
+
+Run this on every finding before returning it, and drop the finding if any answer is no:
+
+1. Did you read the cited code at the head being reviewed, not only the diff hunk?
+2. Did you read the callers and the nearest guards, types, validators, and tests, and does none of them already handle the scenario?
+3. Can you state the input or state, and the wrong outcome, in two sentences without "might", "could", or "may"?
+4. Is the defect introduced or made reachable by this change?
+5. Would the project's maintainers, reading your claim and scenario, agree it needs a change rather than a different taste?
+
+Report only findings with `high` or `medium` confidence. If you would rate one `low`, drop it. If the only thing missing is information from outside the diff, such as infrastructure or product intent, put it in your coverage notes as not judged.
+
 ## Shared rules
 
 Do not report:
