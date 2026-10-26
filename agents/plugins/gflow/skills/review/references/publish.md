@@ -1,6 +1,6 @@
 # Publishing the review (`--post`)
 
-Load this file only when `--post` is given. The flag is the authorization to post; do not ask for confirmation. The HTML document is never produced, posted, or attached.
+Load this file only when `--post` is given. The flag is the authorization to post; do not ask for confirmation. The HTML document, if `--report` also produced one, is never posted or attached.
 
 - Create a single pull request review through the GitHub API (`POST /repos/<owner>/<repo>/pulls/<number>/reviews`), pinned to the reviewed head SHA with `commit_id`, with:
   - `event`: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`, from the verdict. If GitHub rejects the event because the authenticated user authored the PR, post it as `COMMENT` and say why in the body

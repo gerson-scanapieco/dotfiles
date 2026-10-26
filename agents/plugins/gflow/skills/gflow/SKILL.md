@@ -44,7 +44,7 @@ Invoke the `impl` skill with the issue ID, but run only its Phase 1 and Phase 2.
 
 Review the branch before anyone else sees it, using the `review` skill. Repeat the following at most 3 rounds, or until a round has no confirmed findings:
 
-1. Delegate to a subagent with fresh context, so the review does not inherit the implementer's assumptions. Tell it to invoke the `review` skill with `--no-report --issue <Linear issue ID>` on the current branch, and to return the skill's output unchanged. The review skill runs with its own model and effort settings. If the harness cannot dispatch subagents, invoke the skill directly.
+1. Delegate to a subagent with fresh context, so the review does not inherit the implementer's assumptions. Tell it to invoke the `review` skill with `--issue <Linear issue ID>` on the current branch, and to return the skill's output unchanged. The review skill runs with its own model and effort settings. If the harness cannot dispatch subagents, invoke the skill directly.
 2. Read the result:
    - `confirmed` findings are already independently verified by the review, so do not re-derive them. Quickly sanity-check each against the code you just wrote before changing it, and skip with a note any that no longer apply
    - `needs decision` items are not acted on; they go to the developer

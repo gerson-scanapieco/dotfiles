@@ -1,6 +1,6 @@
 # HTML review document
 
-Instructions for the personal review document. Load this file only when the review runs in report mode (neither `--post` nor `--no-report`). The document is for the person doing the review, never for the pull request: be direct, explain things, and include what you would not post to a PR.
+Instructions for the personal review document. Load this file only when `--report` is given. The document is for the person doing the review, never for the pull request: be direct, explain things, and include what you would not post to a PR.
 
 ## File
 
