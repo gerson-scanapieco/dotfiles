@@ -65,11 +65,11 @@ Dispatch one subagent per lens (six), concurrently, each with fresh context so n
 Set the model and effort explicitly on every dispatch: `sonnet` for all six, with `high` effort for correctness and security and `medium` for the rest. The lead keeps its own model and effort for everything else.
 
 Lenses:
-1. **Correctness**: logic errors, edge cases (empty, null, boundary, large, concurrent), error handling and propagation, resource leaks, off-by-one, state and ordering bugs, and behavior that changed for existing callers.
-2. **Requirements and tests**: trace each requirement to the code and the test that proves it; report requirements that are missing, only partially met, or untested, behavior added that nobody asked for, and tests that cannot fail or assert the wrong thing.
+1. **Correctness**: logic errors, edge cases (empty, null, boundary, large, concurrent), error handling and propagation, resource leaks, off-by-one, state and ordering bugs, behavior that changed for existing callers, and incorrect React hook and state usage in front-end code.
+2. **Requirements and tests**: trace each requirement to the code and the test that proves it; report requirements that are missing, only partially met, or untested, behavior added that nobody asked for, tests that cannot fail or assert the wrong thing, and tests that verify the implementation instead of the behavior.
 3. **Security and access control**: read `references/security-checklist.md` (OWASP Top 10:2025) and walk the diff against every category. Find how the project already decides who may do or see what and how it handles authentication, cryptography, input, and logging, then compare every new or changed path to it. Name the category in plain words on each finding (for example "Broken access control"). Say what could not be judged from the diff alone.
-4. **Design and consistency**: boundaries and layering, duplicated logic that already exists elsewhere in the codebase, deviation from the project's established patterns, public API and schema compatibility, and migration safety.
-5. **Performance and operations**: N+1 queries, unbounded work or memory, missing indexes, blocking calls on hot paths, retry and timeout behavior, and observability gaps.
+4. **Design and consistency**: boundaries and layering, duplicated logic that already exists elsewhere in the codebase, deviation from the project's established patterns, public API and schema compatibility, migration safety, and comments that explain how the code works instead of why.
+5. **Performance and operations**: N+1 queries, unbounded work or memory, missing indexes, blocking calls on hot paths, missing or oversized timeouts on external calls, retry behavior, front-end performance, and observability gaps.
 6. **Configuration and deployment**: everything the change needs from its environment that the diff must also provide.
    - New or changed environment variables, secrets, settings, and feature flags that the code reads, and whether each is declared everywhere the project declares them (config templates, `.env.example`, deploy manifests, CI, infrastructure, docs)
    - Defaults and validation: a missing or malformed value that fails late or silently instead of at boot, defaults that are unsafe in production, and values that differ by environment
@@ -85,7 +85,7 @@ Each reviewer returns its findings in this shape:
 
 Before returning, each reviewer runs the self-check in `references/lens-rules.md` on every finding and drops the ones that fail it.
 
-Read `references/lens-rules.md` and give each reviewer its shared rules plus the section for its lens, so it knows what to flag and what not to. A reviewer with nothing to report says "no findings".
+Read `references/lens-rules.md` and give each reviewer its shared rules plus the section for its lens, so it knows what to flag and what not to. When the diff contains front-end code, also give the correctness and performance lenses `references/frontend.md`. A reviewer with nothing to report says "no findings".
 
 ## Phase 3: Consolidate
 
