@@ -7,6 +7,50 @@ alias dockerclean='dockercleanc; or true; and dockercleani'
 # Git
 abbr -a g git
 
+# Git worktrees: wt new <branch> | wt rm <name> | wt ls
+function wt
+    set -l cmd $argv[1]
+    set -e argv[1]
+
+    set -l common (git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+    or begin
+        echo "wt: not in a git repository" >&2
+        return 1
+    end
+
+    set -l root
+    if test (basename $common) = .bare
+        set root (dirname $common)
+    else
+        set root (dirname (git rev-parse --show-toplevel))
+    end
+
+    switch "$cmd"
+        case new
+            if test (count $argv) -ne 1
+                echo "usage: wt new <branch>" >&2
+                return 1
+            end
+            set -l dir $root/(string replace -a / - $argv[1])
+            git worktree add -b $argv[1] $dir; and cd $dir
+        case rm
+            if test (count $argv) -ne 1
+                echo "usage: wt rm <name>" >&2
+                return 1
+            end
+            set -l dir $root/$argv[1]
+            git -C $common worktree remove $dir
+            and if string match -q "$dir*" $PWD
+                cd $root
+            end
+        case ls
+            git worktree list
+        case '*'
+            echo "usage: wt new <branch> | wt rm <name> | wt ls" >&2
+            return 1
+    end
+end
+
 # Bundler
 alias b="bundle"
 alias bi="b install --jobs=2"
