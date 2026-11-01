@@ -1,0 +1,34 @@
+#!/bin/bash
+
+plugin_dir="agents/plugins/gflow"
+manifests=("${plugin_dir}/plugin.json" "${plugin_dir}/.claude-plugin/plugin.json")
+
+staged=$(git diff --cached --name-only --diff-filter=ACMRD -- "${plugin_dir}")
+[ -z "${staged}" ] && exit 0
+
+needs_bump=$(echo "${staged}" | grep -v -x -e "${plugin_dir}/README.md" -e "${manifests[0]}" -e "${manifests[1]}")
+[ -z "${needs_bump}" ] && exit 0
+
+version_of() {
+  sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' | head -1
+}
+
+fail() {
+  echo "gflow version check failed: $1" >&2
+  echo "Bump \"version\" in ${manifests[0]} and ${manifests[1]} (patch: fix, minor: new or changed skill, major: breaking)." >&2
+  exit 1
+}
+
+new_a=$(git show ":${manifests[0]}" | version_of)
+new_b=$(git show ":${manifests[1]}" | version_of)
+
+[ -z "${new_a}" ] || [ -z "${new_b}" ] && fail "could not read the version from a manifest"
+[ "${new_a}" != "${new_b}" ] && fail "manifests disagree (${new_a} vs ${new_b})"
+
+if git cat-file -e "HEAD:${manifests[0]}" 2>/dev/null; then
+  old=$(git show "HEAD:${manifests[0]}" | version_of)
+  [ "${new_a}" = "${old}" ] && fail "plugin files changed but the version is still ${old}"
+  [ "$(printf '%s\n%s\n' "${old}" "${new_a}" | sort -V | tail -1)" != "${new_a}" ] && fail "version ${new_a} is lower than ${old}"
+fi
+
+exit 0
