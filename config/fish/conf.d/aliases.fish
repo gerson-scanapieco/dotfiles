@@ -7,7 +7,18 @@ alias dockerclean='dockercleanc; or true; and dockercleani'
 # Git
 abbr -a g git
 
-# Git worktrees: wt new <branch> | wt rm <name> | wt ls
+# Git worktrees: wt new [--no-hooks] <branch> | wt rm [--no-hooks] <name> | wt ls
+# Per-project hooks live in the worktree's tracked .wt/ dir: post-new, pre-rm, post-rm
+function __wt_hook --argument-names hook script cwd root branch dir
+    test -x $script; or return 0
+    WT_HOOK=$hook WT_ROOT=$root WT_BRANCH=$branch WT_DIR=$dir \
+        command sh -c 'cd "$1" && exec "$2"' sh $cwd $script
+    or begin
+        echo "wt: $hook hook failed" >&2
+        return 1
+    end
+end
+
 function wt
     set -l cmd $argv[1]
     set -e argv[1]
@@ -27,21 +38,47 @@ function wt
 
     switch "$cmd"
         case new
+            argparse no-hooks -- $argv; or return 1
             if test (count $argv) -ne 1
-                echo "usage: wt new <branch>" >&2
+                echo "usage: wt new [--no-hooks] <branch>" >&2
                 return 1
             end
-            set -l dir $root/(string replace -a / - $argv[1])
-            git worktree add -b $argv[1] $dir; and cd $dir
+            set -l branch $argv[1]
+            set -l dir $root/(string replace -a / - $branch)
+            git worktree add -b $branch $dir; or return 1
+            cd $dir
+            set -q _flag_no_hooks
+            or __wt_hook post-new $dir/.wt/post-new $dir $root $branch $dir
         case rm
+            argparse no-hooks -- $argv; or return 1
             if test (count $argv) -ne 1
-                echo "usage: wt rm <name>" >&2
+                echo "usage: wt rm [--no-hooks] <name>" >&2
                 return 1
             end
             set -l dir $root/$argv[1]
+            set -l branch (git -C $dir branch --show-current 2>/dev/null)
+            set -l post
+
+            if not set -q _flag_no_hooks
+                __wt_hook pre-rm $dir/.wt/pre-rm $dir $root $branch $dir; or return 1
+                if test -x $dir/.wt/post-rm
+                    set post (mktemp)
+                    cp $dir/.wt/post-rm $post; and chmod +x $post
+                end
+            end
+
             git -C $common worktree remove $dir
-            and if string match -q "$dir*" $PWD
+            or begin
+                test -n "$post"; and rm -f $post
+                return 1
+            end
+            if string match -q "$dir*" $PWD
                 cd $root
+            end
+
+            if test -n "$post"
+                __wt_hook post-rm $post $root $root $branch $dir
+                rm -f $post
             end
         case ls
             git worktree list
