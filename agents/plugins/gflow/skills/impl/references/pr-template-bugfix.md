@@ -25,6 +25,8 @@ Use this body for pull requests that fix a bug.
 
 ## How to Reproduce (Before Fix)
 
+<!-- Steps to trigger the bug before the fix, so a reviewer can see it for themselves. -->
+
 1.
 2.
 3.
