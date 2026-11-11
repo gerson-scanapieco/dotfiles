@@ -37,7 +37,7 @@ The work is defined by the implementation plan that the `plan` skill posted as a
 - **MANDATORY**: Determine the PR template: if the issue's Linear label or issue type field marks it as a bug, use the Bugfix template; otherwise use the Feature/Change template
 - **MANDATORY**: Open a draft PR via `gh pr create` targeting `main` with:
   - Title following the template: `<short, descriptive title> [<Linear issue ID>]` (e.g. `Add bookmarks for story moments [FAB-42]`)
-  - Body following the applicable template: read `references/pr-template-bugfix.md` for a bug fix, otherwise `references/pr-template-feature.md`. Fill the verification section from what you actually ran during Phase 2 verification, never from what you expect would work
+  - Body following the applicable template: read `references/pr-template-bugfix.md` for a bug fix, otherwise `references/pr-template-feature.md`
 
 - **MANDATORY**: Add a comment to the Linear issue $ARGUMENTS with the PR link
 - **MANDATORY**: Update the Linear issue status to reflect that a PR is open

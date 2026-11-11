@@ -25,15 +25,28 @@ Use this body for pull requests that fix a bug.
 
 ## How to Reproduce (Before Fix)
 
-1.
-2.
-3.
-
-## How to Verify (After Fix)
-
-<!-- The steps you actually ran in Phase 2, with the observed result of each. Note anything you could not verify. -->
+<!-- Steps to trigger the bug before the fix, so a reviewer can see it for themselves. -->
 
 1.
 2.
 3.
+
+## How to Test (After Fix)
+
+<!-- Manual QA steps a reviewer can follow to confirm the bug is fixed: any setup or test data needed, the actions to take, and the expected result of each. Write them as instructions, not as a log of what was run. Do not list automated tests or the checks you ran. -->
+
+1.
+2.
+3.
+
+<details>
+<summary><h2>Verification Steps</h2></summary>
+
+<!-- The steps you actually ran in Phase 2 to assess that your fix is correct, with the observed result of each. Never list what you expect would work. Note anything you could not verify. -->
+
+1.
+2.
+3.
+
+</details>
 ```
