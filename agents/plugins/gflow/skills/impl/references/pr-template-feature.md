@@ -13,7 +13,10 @@ Use this body for pull requests that are not bug fixes.
 [Schema changes, if any — omit this section entirely if there are none]
 
 ## How to Test
-[The steps you actually ran in Phase 2 to verify the change, with the observed result of each. Note anything you could not verify]
+[Manual QA steps a reviewer can follow to try the change themselves: any setup or test data needed, the actions to take, and the expected result of each. Write them as instructions, not as a log of what was run. Do not list automated tests or the checks you ran]
+
+## Verification Steps
+[The steps you actually ran in Phase 2 to assess that your work is correct, with the observed result of each. Never list what you expect would work. Note anything you could not verify]
 
 ## Deployment Checklist
 [Steps to perform before/while this PR lands in prod: feature flags, config changes, secrets, other infra concerns — omit this section entirely if there are none]
