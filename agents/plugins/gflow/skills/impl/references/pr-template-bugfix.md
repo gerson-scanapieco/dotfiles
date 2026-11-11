@@ -37,11 +37,14 @@ Use this body for pull requests that fix a bug.
 2.
 3.
 
-## Verification Steps
+<details>
+<summary><h2>Verification Steps</h2></summary>
 
 <!-- The steps you actually ran in Phase 2 to assess that your fix is correct, with the observed result of each. Never list what you expect would work. Note anything you could not verify. -->
 
 1.
 2.
 3.
+
+</details>
 ```
