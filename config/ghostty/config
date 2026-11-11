@@ -4,7 +4,7 @@ unfocused-split-opacity = 0.2
 split-divider-color = #909090
 window-padding-x = 20
 window-padding-y = 16
-background-opacity = 0.95
+background-opacity = 0.9
 background-blur = 20
 
 # Use prerelease builds
