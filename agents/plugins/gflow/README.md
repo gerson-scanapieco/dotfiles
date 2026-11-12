@@ -7,6 +7,7 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 | Skill | What it does |
 |---|---|
 | `gflow` | Drives the whole flow end to end, invoking the skills below |
+| `designer` | A staff UI/UX designer to work with: shapes design systems, new screens and flows, and changes to existing designs through clickable HTML prototypes, keeps the product's design memory in `design/`, and writes handoffs for implementation |
 | `spec` | Clarifies a vague problem or rough Linear issue into one issue with acceptance criteria (the *what*) |
 | `plan` | Scopes the work (splitting it into issues or a project when needed) and defines the architecture, technical approach and ordered steps (the *how*), posted as a comment |
 | `impl` | Implements the issue's plan test-first, commits, opens a PR and updates Linear. Requires a plan |
@@ -21,7 +22,7 @@ My development flow as a plugin: scope work in Linear, plan it, implement it, re
 
 ## Install
 
-Requirements: `git`, an authenticated `gh` CLI, and a Linear MCP server (`linear-server`) configured in your agent.
+Requirements: `git`, an authenticated `gh` CLI, and a Linear MCP server (`linear-server`) configured in your agent. `designer` also uses `agent-browser` to review its prototypes visually.
 
 ### Claude Code
 
@@ -61,7 +62,7 @@ opencode v2 has no plugin marketplace and its plugins (`plugins` in `opencode.js
 }
 ```
 
-Skills are not namespaced: each ID comes from its directory name, so mention them as `@spec`, `@plan`, `@impl`, `@watch-pr`, `@address-pr-threads`, `@explain`, `@create-verification-skill`, `@maintain-verification-skill`, `@setup-checks`, `@review` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
+Skills are not namespaced: each ID comes from its directory name, so mention them as `@designer`, `@spec`, `@plan`, `@impl`, `@watch-pr`, `@address-pr-threads`, `@explain`, `@create-verification-skill`, `@maintain-verification-skill`, `@setup-checks`, `@review` and `@gflow`. Alternatively, symlink each skill directory into `~/.agents/skills`, which opencode also scans.
 
 ## Get started
 
@@ -94,6 +95,14 @@ Run a single stage:
 /gflow:spec "Add rate limiting to the public API"
 /gflow:plan ENG-123
 /gflow:impl ENG-123
+```
+
+Work with the designer on a product's design system, a new screen, or a rework:
+
+```
+/gflow:designer "We're starting a new app for tracking household expenses"
+/gflow:designer "Design the invoice export flow"
+/gflow:designer "The dashboard feels cluttered"
 ```
 
 Watch the current branch's pull request, or a specific one:
