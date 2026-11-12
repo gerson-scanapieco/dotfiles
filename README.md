@@ -15,7 +15,7 @@ Personal machine setup: shell, terminal, git, and AI agent configuration.
 | Path | What it holds |
 |---|---|
 | `agents/AGENTS.md` | Global instructions, linked as `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, and the opencode equivalent |
-| `agents/claude/`, `agents/codex/` | Per-tool settings and rules |
+| `agents/claude/`, `agents/codex/`, `agents/opencode/` | Per-tool settings and rules |
 | `agents/skills/` | Standalone skills, linked into `~/.claude/skills` and `~/.agents/skills` |
 | `agents/plugins/` | Personal plugins. Each one is its own marketplace and is installed by the setup |
 
